@@ -1,0 +1,40 @@
+public class Edge<T> {
+
+    private T destination;
+    private final String name;
+    private int weight;
+
+
+    public Edge(String name, int weight) {
+        this.name = name;
+        this.weight = weight;
+    }
+    public Edge(T destination, String name, int weight){
+        this.destination = destination;
+        this.name = name;
+        this.weight = weight;
+    }
+
+    public T getDestination() {
+        return destination;
+    }
+
+    public int getWeight() {
+        return weight;
+    }
+
+    public void setWeight(int newWeight) {
+        if (newWeight < 0) {
+            throw new IllegalArgumentException("Illegal weight");
+        }
+        weight = newWeight;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String toString() {
+        return String.format("till "+destination +" med " +getName() + " tar %d",weight);
+    }
+}
