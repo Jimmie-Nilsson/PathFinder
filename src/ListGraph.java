@@ -26,20 +26,24 @@ public class ListGraph<T> implements Graph<T> {
 
     @Override
     public boolean pathExists(T from, T to) {
+        if (!nodes.containsKey(from) || !nodes.containsKey(to))
+            return false;
         Set<T> visited = new HashSet<>();
-        dfs(from, to, visited);
+        Stack<T> path = new Stack<>();
+        depthFirstSearch(from, to, visited,path);
         return visited.contains(to);
     }
 
     @Override
     public List<Edge<T>> getPath(T from, T to) {
-//        Set<T> visited = new HashSet<>();
-//        Stack<T> path = new Stack<>();
-//        path.push(from);
-//
-//        depthFirstSearch(from,to,visited,path);
-//        List<Edge<T>> list = (List<Edge<T>>) (Object) Arrays.asList(path.toArray());
-//        return list;
+        if (!nodes.containsKey(from) || !nodes.containsKey(to))
+            return null;
+        Set<T> visited = new HashSet<>();
+        Stack<T> path = new Stack<>();
+        path.push(from);
+
+        depthFirstSearch(from,to,visited,path);
+
         return null;
     }
 
@@ -126,26 +130,26 @@ public class ListGraph<T> implements Graph<T> {
 
     }
 
-    //    private Stack<T> depthFirstSearch(T from, T destination, Set<T> visited, Stack<T> pathSoFar) {
-//        visited.add(from);
-//
-//        if (from.equals(destination)){
-//            return pathSoFar;
-//        }
-//        for (Edge<T> edge : nodes.get(from)){
-//            T t = edge.getDestination();
-//            if (!visited.contains(t)){
-//                pathSoFar.push(t);
-//                Stack<T> ts = depthFirstSearch(t, destination,visited,pathSoFar);
-//                if (!ts.isEmpty()){
-//                    return ts;
-//                }else{
-//                    pathSoFar.pop();
-//                }
-//            }
-//        }
-//        return new Stack<T>();
-//    }
+        private Stack<T> depthFirstSearch(T from, T destination, Set<T> visited, Stack<T> pathSoFar) {
+        visited.add(from);
+
+        if (from.equals(destination)){
+            return pathSoFar;
+        }
+        for (Edge<T> edge : nodes.get(from)){
+            T t = edge.getDestination();
+            if (!visited.contains(t)){
+                pathSoFar.push(t);
+                Stack<T> ts = depthFirstSearch(t, destination,visited,pathSoFar);
+                if (!ts.isEmpty()){
+                    return ts;
+                }else{
+                    pathSoFar.pop();
+                }
+            }
+        }
+        return new Stack<T>();
+    }
     private void dfs(T from, T destination, Set<T> visited) {
         visited.add(from);
 
