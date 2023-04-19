@@ -170,7 +170,17 @@ public class ListGraph<T> implements Graph<T> {
     }
 
     public String toString(){
-        return nodes.toString();
+        StringBuilder sb = new StringBuilder();
+        for (T t : nodes.keySet()){
+            sb.append("From: ");
+            sb.append(t.toString());
+                for (Edge<T> edge : nodes.get(t)){
+                    sb.append(edge.toString());
+                    sb.append(", ");
+                }
+                sb.append("\n");
+            }
+        return sb.toString();
     }
 
 }
