@@ -29,8 +29,7 @@ public class ListGraph<T> implements Graph<T> {
         if (!nodes.containsKey(from) || !nodes.containsKey(to))
             return false;
         Set<T> visited = new HashSet<>();
-        Stack<T> path = new Stack<>();
-        depthFirstSearch(from, to, visited,path);
+        depthFirstSearch(from, to, visited);
         return visited.contains(to);
     }
 
@@ -38,13 +37,26 @@ public class ListGraph<T> implements Graph<T> {
     public List<Edge<T>> getPath(T from, T to) {
         if (!nodes.containsKey(from) || !nodes.containsKey(to))
             return null;
-        Set<T> visited = new HashSet<>();
-        Stack<T> path = new Stack<>();
-        path.push(from);
+        Map<T, T> connections = new HashMap<>();
+        LinkedList<T> queue = new LinkedList<>();
 
-        depthFirstSearch(from,to,visited,path);
+        connections.put(from, null);
+        queue.add(from);
 
-        return null;
+        while (!queue.isEmpty()) {
+            T t = queue.pollFirst();
+            for (Edge<T> edge : nodes.get(t)) {
+                T destination = edge.getDestination();
+                if (!connections.containsKey(destination)) {
+                    connections.put(destination, t);
+                    queue.add(destination);
+                }
+            }
+        }
+        if (!connections.containsKey(to)) {
+            return null;
+        }
+        return gatherPath(from, to, connections);
     }
 
     public void connect(T nodeA, T nodeB, String name, int weight) {
@@ -130,37 +142,31 @@ public class ListGraph<T> implements Graph<T> {
 
     }
 
-        private Stack<T> depthFirstSearch(T from, T destination, Set<T> visited, Stack<T> pathSoFar) {
-        visited.add(from);
-
-        if (from.equals(destination)){
-            return pathSoFar;
-        }
-        for (Edge<T> edge : nodes.get(from)){
-            T t = edge.getDestination();
-            if (!visited.contains(t)){
-                pathSoFar.push(t);
-                Stack<T> ts = depthFirstSearch(t, destination,visited,pathSoFar);
-                if (!ts.isEmpty()){
-                    return ts;
-                }else{
-                    pathSoFar.pop();
-                }
-            }
-        }
-        return new Stack<T>();
-    }
-    private void dfs(T from, T destination, Set<T> visited) {
+    private void depthFirstSearch(T from, T destination, Set<T> visited) {
         visited.add(from);
 
         if (from.equals(destination)) {
             return;
         }
         for (Edge<T> edge : nodes.get(from)) {
-            if (!visited.contains(edge.getDestination())) {
-                dfs(edge.getDestination(), destination, visited);
+            T t = edge.getDestination();
+            if (!visited.contains(t)) {
+                 depthFirstSearch(t, destination, visited);
             }
         }
-
     }
+    private List<Edge<T>> gatherPath(T from, T to, Map<T,T> connections){
+        LinkedList<Edge<T>> path = new LinkedList<>();
+        T current = to;
+
+
+        while (!current.equals(from)){
+            T next = connections.get(current);
+            Edge<T> edge = getEdgeBetween(next, current);
+            path.addFirst(edge);
+            current = next;
+        }
+        return path;
+    }
+
 }
