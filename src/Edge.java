@@ -1,3 +1,9 @@
+// PROG2 VT2023, Inlämningsuppgift, del 1
+// Grupp 230
+// Jimmie Nilsson jini6619
+
+
+
 public class Edge<T> {
 
     private T destination;

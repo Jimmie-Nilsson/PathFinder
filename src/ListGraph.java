@@ -1,3 +1,7 @@
+// PROG2 VT2023, Inlämningsuppgift, del 1
+// Grupp 230
+// Jimmie Nilsson jini6619
+
 import java.util.*;
 
 public class ListGraph<T> implements Graph<T> {
