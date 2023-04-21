@@ -6,7 +6,7 @@
 
 public class Edge<T> {
 
-    private T destination;
+    private final T destination;
     private final String name;
     private int weight;
 
