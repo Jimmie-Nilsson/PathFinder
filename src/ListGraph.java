@@ -178,7 +178,9 @@ public class ListGraph<T> implements Graph<T> {
         for (T t : nodes.keySet()){
             sb.append("From: ");
             sb.append(t.toString());
+            sb.append(" ");
                 for (Edge<T> edge : nodes.get(t)){
+
                     sb.append(edge.toString());
                     sb.append(", ");
                 }
