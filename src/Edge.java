@@ -11,10 +11,6 @@ public class Edge<T> {
     private int weight;
 
 
-    public Edge(String name, int weight) {
-        this.name = name;
-        this.weight = weight;
-    }
     public Edge(T destination, String name, int weight){
         this.destination = destination;
         this.name = name;
