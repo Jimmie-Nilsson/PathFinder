@@ -35,6 +35,14 @@ public class Main extends Application {
          save = new MenuItem("Save");
          saveImg = new MenuItem("Save Image");
          exit = new MenuItem("Exit");
+         exit.setOnAction(event -> { // This is a work in progress just testing things out!!
+             Alert msgBox = new Alert(Alert.AlertType.CONFIRMATION);
+             msgBox.setTitle("Warning!");
+             msgBox.setHeaderText("Unsaved changes, exit anyway?");
+             msgBox.showAndWait();
+
+         }); // END OF TESTING
+
 
         fileMenu.getItems().addAll(newMap, open, save, saveImg, exit);
         menuBar.getMenus().add(fileMenu);
