@@ -39,7 +39,8 @@ public class Main extends Application {
          exit.setOnAction(event -> { // This is a work in progress just testing things out!!
              Alert msgBox = new Alert(Alert.AlertType.CONFIRMATION);
              msgBox.setTitle("Warning!");
-             msgBox.setHeaderText("Unsaved changes, exit anyway?");
+             msgBox.setContentText("Unsaved changes, exit anyway?");
+             msgBox.setHeaderText(null);
              msgBox.showAndWait();
 
          }); // END OF TESTING
@@ -71,6 +72,10 @@ public class Main extends Application {
 
     public static void main(String[] args) {
         launch();
+        shutdown();
+    }
+    public static void shutdown(){
+        System.out.println("Goodbye");
     }
 
     class Handler implements EventHandler<ActionEvent> {
