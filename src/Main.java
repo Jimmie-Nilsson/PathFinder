@@ -4,6 +4,7 @@ import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -18,6 +19,7 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.*;
 
 public class Main extends Application {
 
@@ -50,7 +52,7 @@ public class Main extends Application {
         menuBar = new MenuBar();
         fileMenu = new Menu("File");
         menuFileNewMap = new MenuItem("New Map");
-        menuFileNewMap.setOnAction(new NewMapHandler());
+        menuFileNewMap.setOnAction(event -> openMap("file:europa.gif"));
 
         menuFileOpen = new MenuItem("Open");
         menuFileOpen.setOnAction(new OpenMapHandler());
@@ -103,33 +105,21 @@ public class Main extends Application {
         System.out.println("Goodbye");
     }
 
-    class NewMapHandler implements EventHandler<ActionEvent> {
-        public void handle(ActionEvent event) {
-            changes = true;
-            if (map == null) {
-                openMap("file:europa.gif");
-//            map = new Pane();
-//            Image background = new Image("file:europa.gif");
-//            ImageView bg = new ImageView(background);
-//            map.getChildren().add(bg);
-//            root.getChildren().add(map);
-//            primaryStage.setHeight(background.getHeight() + 110);
-//            primaryStage.setWidth(background.getWidth() + 15);
-        }else {
-                root.getChildren().remove(map);
-                map = null;
-                handle(event);
-            }
-        }
-    }
     private void openMap(String mapName){
-        map = new Pane();
-        Image background = new Image(mapName);
-        ImageView bg = new ImageView(background);
-        map.getChildren().add(bg);
-        root.getChildren().add(map);
-        primaryStage.setHeight(background.getHeight() + 110); // 110 is extra pixels by other elements
-        primaryStage.setWidth(background.getWidth() + 15); // 15 is padding to make the map look better
+            changes = true;
+        if (map == null) {
+            map = new Pane();
+            Image background = new Image(mapName);
+            ImageView bg = new ImageView(background);
+            map.getChildren().add(bg);
+            root.getChildren().add(map);
+            primaryStage.setHeight(background.getHeight() + 110); // 110 is extra pixels by other elements
+            primaryStage.setWidth(background.getWidth() + 15); // 15 is padding to make the map look better
+        }else {
+            root.getChildren().remove(map);
+            map = null;
+            openMap(mapName);
+        }
 
     }
     private void setIDs(){
@@ -149,18 +139,29 @@ public class Main extends Application {
 
         @Override
         public void handle(ActionEvent actionEvent) {
+            Map<String,Location> locations = new HashMap<>();
+            ListGraph<Location> graph = new ListGraph<>();
             try {
                 FileReader file = new FileReader("europa.graph");
                 BufferedReader in = new BufferedReader(file);
                 String line = in.readLine();
                 openMap(line);
                 line = in.readLine();
-                String[] locations =  line.split(";");
-                for (int i = 0; i < locations.length; i+= 3)
-
+                String[] tokens =  line.split(";");
+                for (int i = 0; i < tokens.length; i+= 3) {
+                    Location loc = new Location(tokens[0], Double.parseDouble(tokens[1]), Double.parseDouble(tokens[2]));
+                    graph.add(loc);
+                    locations.put(loc.getName(), loc);
+                }
                 while ((line = in.readLine()) != null){
+                    tokens = line.split(";");
+                    if (locations.containsKey(tokens[0]) && locations.containsKey(tokens[1])){
+                    graph.connect(locations.get(tokens[0]),locations.get(tokens[1]),tokens[2],Integer.parseInt(tokens[3]));
+                    }
 
                 }
+                in.close();
+                file.close();
             }catch (FileNotFoundException e){
                 Alert error = new Alert(Alert.AlertType.ERROR);
                 error.setTitle("Error");
