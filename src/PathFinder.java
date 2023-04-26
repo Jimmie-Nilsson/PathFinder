@@ -4,7 +4,6 @@ import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -14,14 +13,13 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
-import javax.swing.*;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
 
-public class Main extends Application {
+public class PathFinder extends Application {
 
     // Change variable names later
     // clean up code
@@ -43,6 +41,7 @@ public class Main extends Application {
     private Button newCon;
     private Button changeCon;
     private Stage primaryStage;
+    private Location locA, locB;
     private boolean changes = false;
 
 
@@ -98,15 +97,10 @@ public class Main extends Application {
 
     public static void main(String[] args) {
         launch();
-        shutdown();
     }
 
-    public static void shutdown() {
-        System.out.println("Goodbye");
-    }
-
-    private void openMap(String mapName){
-            changes = true;
+    private void openMap(String mapName) {
+        changes = true;
         if (map == null) {
             map = new Pane();
             Image background = new Image(mapName);
@@ -115,14 +109,15 @@ public class Main extends Application {
             root.getChildren().add(map);
             primaryStage.setHeight(background.getHeight() + 110); // 110 is extra pixels by other elements
             primaryStage.setWidth(background.getWidth() + 15); // 15 is padding to make the map look better
-        }else {
+        } else {
             root.getChildren().remove(map);
             map = null;
             openMap(mapName);
         }
 
     }
-    private void setIDs(){
+
+    private void setIDs() {
         menuBar.setId("menu");
         fileMenu.setId("menuFile");
         menuFileNewMap.setId("menuNewMap");
@@ -132,14 +127,16 @@ public class Main extends Application {
         menuExit.setId("menuExit");
         // add buttons here later
     }
-    private boolean mapExists(){
+
+    private boolean mapExists() {
         return root.getChildren().contains(map);
     }
-    class OpenMapHandler implements EventHandler<ActionEvent>{
+
+    class OpenMapHandler implements EventHandler<ActionEvent> {
 
         @Override
         public void handle(ActionEvent actionEvent) {
-            Map<String,Location> locations = new HashMap<>();
+            Map<String, Location> locations = new HashMap<>();
             ListGraph<Location> graph = new ListGraph<>();
             try {
                 FileReader file = new FileReader("europa.graph");
@@ -147,28 +144,40 @@ public class Main extends Application {
                 String line = in.readLine();
                 openMap(line);
                 line = in.readLine();
-                String[] tokens =  line.split(";");
-                for (int i = 0; i < tokens.length; i+= 3) {
-                    Location loc = new Location(tokens[0], Double.parseDouble(tokens[1]), Double.parseDouble(tokens[2]));
+                String[] tokens = line.split(";");
+                for (int i = 0; i < tokens.length; i += 3) {
+                    Location loc = new Location(tokens[i], Double.parseDouble(tokens[i + 1]), Double.parseDouble(tokens[i + 2]));
                     graph.add(loc);
                     locations.put(loc.getName(), loc);
                 }
-                while ((line = in.readLine()) != null){
+                while ((line = in.readLine()) != null) {
                     tokens = line.split(";");
-                    if (locations.containsKey(tokens[0]) && locations.containsKey(tokens[1])){
-                    graph.connect(locations.get(tokens[0]),locations.get(tokens[1]),tokens[2],Integer.parseInt(tokens[3]));
+                    if (locations.containsKey(tokens[0]) && locations.containsKey(tokens[1])) {
+                        if (graph.getEdgeBetween(locations.get(tokens[0]), locations.get(tokens[1])) == null){
+                            graph.connect(locations.get(tokens[0]), locations.get(tokens[1]), tokens[2], Integer.parseInt(tokens[3]));
+                        }
                     }
 
                 }
                 in.close();
                 file.close();
-            }catch (FileNotFoundException e){
+                for (Location loc : graph.getNodes()) {
+                    map.getChildren().add(loc);
+                    for (Edge<Location> edge : graph.getEdgesFrom(loc)){
+                        //In this for loop place the code for drawing line from loc to
+                        // edge.getDestination()
+                        //
+                        //
+                    }
+                }
+                System.out.println(graph);
+            } catch (FileNotFoundException e) {
                 Alert error = new Alert(Alert.AlertType.ERROR);
                 error.setTitle("Error");
                 error.setHeaderText(null);
                 error.setContentText("Could not open File:europa.graph");
                 error.showAndWait();
-            }catch (IOException e){
+            } catch (IOException e) {
                 Alert error = new Alert(Alert.AlertType.ERROR);
                 error.setTitle("Error");
                 error.setHeaderText(null);
