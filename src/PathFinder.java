@@ -11,6 +11,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.scene.shape.Line;
 import javafx.stage.Stage;
 
 import java.io.BufferedReader;
@@ -164,13 +165,11 @@ public class PathFinder extends Application {
                 for (Location loc : graph.getNodes()) {
                     map.getChildren().add(loc);
                     for (Edge<Location> edge : graph.getEdgesFrom(loc)){
-                        //In this for loop place the code for drawing line from loc to
-                        // edge.getDestination()
-                        //
-                        //
+                        Line connection = new Line(loc.getX(), loc.getY(), edge.getDestination().getX(), edge.getDestination().getY());
+                        connection.setStrokeWidth(2);
+                        map.getChildren().add(connection);
                     }
                 }
-                System.out.println(graph);
             } catch (FileNotFoundException e) {
                 Alert error = new Alert(Alert.AlertType.ERROR);
                 error.setTitle("Error");
