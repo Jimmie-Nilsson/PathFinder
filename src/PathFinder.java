@@ -181,6 +181,7 @@ public class PathFinder extends Application {
                 error.setTitle("Error");
                 error.setHeaderText(null);
                 error.setContentText(e.getMessage());
+                error.showAndWait();
             }
         }
     }
