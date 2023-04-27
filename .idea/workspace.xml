@@ -195,7 +195,19 @@
       <option name="presentableId" value="LOCAL−00014" />
       <updated>1682534073914</updated>
     </task>
-    <option name="localTasksCounter" value="15" />
+    <task id="LOCAL−00015" summary="Working on graphics">
+      <created>1682536659916</created>
+      <option name="number" value="LOCAL−00015" />
+      <option name="presentableId" value="LOCAL−00015" />
+      <updated>1682536659916</updated>
+    </task>
+    <task id="LOCAL−00016" summary="Working on graphics">
+      <created>1682536714820</created>
+      <option name="number" value="LOCAL−00016" />
+      <option name="presentableId" value="LOCAL−00016" />
+      <updated>1682536714820</updated>
+    </task>
+    <option name="localTasksCounter" value="17" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">

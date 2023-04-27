@@ -162,19 +162,12 @@ public class PathFinder extends Application {
                 }
                 in.close();
                 file.close();
-                for (Location loc : graph.getNodes()) {
-                    map.getChildren().add(loc);
-                    for (Edge<Location> edge : graph.getEdgesFrom(loc)){
-                        Line connection = new Line(loc.getX(), loc.getY(), edge.getDestination().getX(), edge.getDestination().getY());
-                        connection.setStrokeWidth(2);
-                        map.getChildren().add(connection);
-                    }
-                }
+                loadGraphToMap(graph);
             } catch (FileNotFoundException e) {
                 Alert error = new Alert(Alert.AlertType.ERROR);
                 error.setTitle("Error");
                 error.setHeaderText(null);
-                error.setContentText("Could not open File:europa.graph");
+                error.setContentText("Could not open File: europa.graph");
                 error.showAndWait();
             } catch (IOException e) {
                 Alert error = new Alert(Alert.AlertType.ERROR);
@@ -182,6 +175,17 @@ public class PathFinder extends Application {
                 error.setHeaderText(null);
                 error.setContentText(e.getMessage());
                 error.showAndWait();
+            }
+        }
+    }
+    private void loadGraphToMap(ListGraph<Location> graph){
+        for (Location loc : graph.getNodes()) {
+            map.getChildren().add(loc);
+            for (Edge<Location> edge : graph.getEdgesFrom(loc)){
+                Line connection = new Line(loc.getX(), loc.getY(), edge.getDestination().getX(), edge.getDestination().getY());
+                connection.setStrokeWidth(2);
+                connection.setDisable(true); // makes lines not clickable on map easier to click nodes
+                map.getChildren().add(connection);
             }
         }
     }
