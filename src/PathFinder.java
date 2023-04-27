@@ -13,6 +13,8 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Line;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
+import org.w3c.dom.events.Event;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -62,12 +64,10 @@ public class PathFinder extends Application {
         menuSaveImg = new MenuItem("Save Image");
 
         menuExit = new MenuItem("Exit");
-        menuExit.setOnAction(event -> { // This is a work in progress just testing things out!!
-            Alert msgBox = new Alert(Alert.AlertType.CONFIRMATION);
-            msgBox.setTitle("Warning!");
-            msgBox.setContentText("Unsaved changes, exit anyway?");
-            msgBox.setHeaderText(null);
-            msgBox.showAndWait();
+        menuExit.setOnAction(event -> { // Put this code on exitRequest
+            if (changes) {
+                primaryStage.fireEvent(new WindowEvent(primaryStage, WindowEvent.WINDOW_CLOSE_REQUEST));
+            }
         }); // END OF TESTING
 
 
@@ -89,6 +89,7 @@ public class PathFinder extends Application {
         root.getChildren().add(menuBar);
         root.getChildren().add(buttons);
         Scene scene = new Scene(root, 550, 100);
+        primaryStage.setOnCloseRequest(new ExitHandler());
         primaryStage.setScene(scene);
         primaryStage.setTitle("PathFinder");
         primaryStage.show();
@@ -101,6 +102,9 @@ public class PathFinder extends Application {
     }
 
     private void openMap(String mapName) {
+        if (changes){
+            // write code here for handling unsaved changes...
+        }
         changes = true;
         if (map == null) {
             map = new Pane();
@@ -133,6 +137,22 @@ public class PathFinder extends Application {
         return root.getChildren().contains(map);
     }
 
+    class ExitHandler implements EventHandler<WindowEvent> {
+        @Override
+        public void handle(WindowEvent event) {
+            if (changes) {
+                Alert msgBox = new Alert(Alert.AlertType.CONFIRMATION);
+                msgBox.setTitle("Warning!");
+                msgBox.setContentText("Unsaved changes, exit anyway?");
+                msgBox.setHeaderText(null);
+                Optional<ButtonType> choice = msgBox.showAndWait();
+                if (choice.isPresent() && choice.get() != ButtonType.OK) {
+                    event.consume();
+                }
+            }
+        }
+    }
+
     class OpenMapHandler implements EventHandler<ActionEvent> {
 
         @Override
@@ -154,7 +174,7 @@ public class PathFinder extends Application {
                 while ((line = in.readLine()) != null) {
                     tokens = line.split(";");
                     if (locations.containsKey(tokens[0]) && locations.containsKey(tokens[1])) {
-                        if (graph.getEdgeBetween(locations.get(tokens[0]), locations.get(tokens[1])) == null){
+                        if (graph.getEdgeBetween(locations.get(tokens[0]), locations.get(tokens[1])) == null) {
                             graph.connect(locations.get(tokens[0]), locations.get(tokens[1]), tokens[2], Integer.parseInt(tokens[3]));
                         }
                     }
@@ -178,10 +198,11 @@ public class PathFinder extends Application {
             }
         }
     }
-    private void loadGraphToMap(ListGraph<Location> graph){
+
+    private void loadGraphToMap(ListGraph<Location> graph) {
         for (Location loc : graph.getNodes()) {
             map.getChildren().add(loc);
-            for (Edge<Location> edge : graph.getEdgesFrom(loc)){
+            for (Edge<Location> edge : graph.getEdgesFrom(loc)) {
                 Line connection = new Line(loc.getX(), loc.getY(), edge.getDestination().getX(), edge.getDestination().getY());
                 connection.setStrokeWidth(2);
                 connection.setDisable(true); // makes lines not clickable on map easier to click nodes
