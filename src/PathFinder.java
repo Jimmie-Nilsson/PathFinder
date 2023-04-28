@@ -13,9 +13,11 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
@@ -55,7 +57,7 @@ public class PathFinder extends Application {
     private Button newCon;
     private Button changeCon;
     private Stage primaryStage;
-    private Location locA, locB;
+    private Location locA = null, locB = null;
     private boolean changes = false;
 
 
@@ -105,8 +107,6 @@ public class PathFinder extends Application {
         buttons.setDisable(true);
 
 
-
-
         root.getChildren().add(menuBar);
         root.getChildren().add(buttons);
         Scene scene = new Scene(root, 550, 100);
@@ -124,18 +124,20 @@ public class PathFinder extends Application {
     }
 
     private void openMap(String mapName) {
+        locA = null;
+        locB = null;
         if (changes) {
             // write code here for handling unsaved changes...
         }
         changes = true;
         if (map == null) {
             map = new Pane();
-            map.setDisable(true);
+            // map.setDisable(true);
             Image background = new Image(mapName);
             ImageView bg = new ImageView(background);
             map.getChildren().add(bg);
             root.getChildren().add(map);
-            primaryStage.setHeight(background.getHeight()  + 110); // 110 is extra pixels by other elements
+            primaryStage.setHeight(background.getHeight() + 110); // 110 is extra pixels by other elements
             primaryStage.setWidth(background.getWidth() + 15); // 15 is padding to make the map look better in the scene
             buttons.setDisable(false);
         } else {
@@ -231,33 +233,33 @@ public class PathFinder extends Application {
         }
     }
 
-    class SaveMapHandler implements EventHandler<ActionEvent>{
+    class SaveMapHandler implements EventHandler<ActionEvent> {
         @Override
-        public void handle(ActionEvent event){
+        public void handle(ActionEvent event) {
             try {
                 FileWriter file = new FileWriter("europa1.graph");// change this later this is for testing
                 PrintWriter out = new PrintWriter(file);
                 out.println("file:europa.gif");
-                for(Location loc : graph.getNodes()) {
-                    out.format("%s;%.01f;%.01f;",loc.getName(), loc.getX(), loc.getY());
+                for (Location loc : graph.getNodes()) {
+                    out.format("%s;%.01f;%.01f;", loc.getName(), loc.getX(), loc.getY());
                 }
                 out.println();
-                for (Location loc : graph.getNodes()){
-                    for (Edge<Location> edge : graph.getEdgesFrom(loc)){
+                for (Location loc : graph.getNodes()) {
+                    for (Edge<Location> edge : graph.getEdgesFrom(loc)) {
                         out.format("%s;%s;%s;%d\n", loc.getName(), edge.getDestination().getName(), edge.getName(), edge.getWeight());
                     }
                 }
                 out.close();
                 file.close();
                 changes = false;
-            }catch (FileNotFoundException e){
+            } catch (FileNotFoundException e) {
                 Alert error = new Alert(Alert.AlertType.ERROR);
                 error.setTitle("Error");
                 error.setHeaderText(null);
                 error.setContentText("Could not write to File: europa.graph");
                 error.showAndWait();
 
-            }catch (IOException e){
+            } catch (IOException e) {
                 Alert error = new Alert(Alert.AlertType.ERROR);
                 error.setTitle("Error");
                 error.setHeaderText(null);
@@ -269,12 +271,13 @@ public class PathFinder extends Application {
 
     private void loadGraphToMap(ListGraph<Location> graph) {
         for (Location loc : graph.getNodes()) {
+            loc.setOnMouseClicked(new ClickHandler());
             map.getChildren().add(loc);
             Text cityName = new Text(loc.getX() + loc.getRadius(), loc.getY() + loc.getRadius(), loc.getName());
 
             // x + 5 and y + 15 is moving them a few pixels so  that the text gets away from the nodes, so it is easier to read
             cityName.setStrokeWidth(5);
-            cityName.setFont(Font.font("Verdana", FontWeight.BOLD, FontPosture.REGULAR,12));
+            cityName.setFont(Font.font("Verdana", FontWeight.BOLD, FontPosture.REGULAR, 12));
             cityName.setDisable(true);
             map.getChildren().add(cityName);
 
@@ -287,41 +290,64 @@ public class PathFinder extends Application {
         }
     }
 
-    class SaveImgHandler implements EventHandler<ActionEvent>{
-        public void handle(ActionEvent event){
-            try{
+    class SaveImgHandler implements EventHandler<ActionEvent> {
+        public void handle(ActionEvent event) {
+            try {
                 WritableImage image = root.snapshot(null, null);
                 BufferedImage buffImage = SwingFXUtils.fromFXImage(image, null);
                 ImageIO.write(buffImage, "png", new File("capture.png"));
-            }catch (IOException e){
-                Alert alert = new Alert(Alert.AlertType.ERROR,"" + e.getMessage());
+            } catch (IOException e) {
+                Alert alert = new Alert(Alert.AlertType.ERROR, "" + e.getMessage());
                 alert.showAndWait();
             }
         }
     }
-    class NewLocationHandler implements EventHandler<ActionEvent>{
+
+    class NewLocationHandler implements EventHandler<ActionEvent> {
         @Override
-        public void handle(ActionEvent event){
+        public void handle(ActionEvent event) {
             graph = new ListGraph<>();
             root.cursorProperty().setValue(Cursor.CROSSHAIR);
             newPlace.setDisable(true);
-            map.setDisable(false);
-            map.setOnMouseClicked(mouseEvent ->{
-                TextInputDialog nameOfLoc = new TextInputDialog("Name");
-                nameOfLoc.setHeaderText(null);
-                nameOfLoc.setContentText("Name of place:");
-                Optional<String> name = nameOfLoc.showAndWait();
-                if (name.isPresent()) {
-                    Location loc = new Location(name.get(), mouseEvent.getX(), mouseEvent.getY());
-                    graph.add(loc);
-                    loadGraphToMap(graph);
+            //map.setDisable(false); LOOK AT THIS LATER
+            if (newPlace.isDisabled()) {
+                map.setOnMouseClicked(mouseEvent -> {
+                    TextInputDialog nameOfLoc = new TextInputDialog("Name");
+                    nameOfLoc.setHeaderText(null);
+                    nameOfLoc.setContentText("Name of place:");
+                    Optional<String> name = nameOfLoc.showAndWait();
+                    if (name.isPresent()) {
+                        Location loc = new Location(name.get(), mouseEvent.getX(), mouseEvent.getY());
+                        graph.add(loc);
+                        loadGraphToMap(graph);
+                    }
+                    root.cursorProperty().setValue(Cursor.DEFAULT);
+                    //map.setDisable(true); LOOK AT THIS LATER
+                    newPlace.setDisable(false);
+                });
+            }
 
-                }
-                root.cursorProperty().setValue(Cursor.DEFAULT);
-                map.setDisable(true);
-                newPlace.setDisable(false);
-            });
+        }
+    }
 
+    class ClickHandler implements EventHandler<MouseEvent> {
+
+        @Override
+        public void handle(MouseEvent event) {
+            Location loc = (Location) event.getSource();
+            if (locA == null && !loc.equals(locB)) {
+                locA = loc;
+                locA.flipColor();
+            } else if (locB == null && !loc.equals(locA)) {
+                locB = loc;
+                locB.flipColor();
+            } else if (locA != null && locA.equals(loc)) {
+                locA.flipColor();
+                locA = null;
+            } else if (locB != null && locB.equals(loc)) {
+                locB.flipColor();
+                locB = null;
+            }
         }
     }
 }
