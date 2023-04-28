@@ -102,7 +102,7 @@ public class PathFinder extends Application {
     }
 
     private void openMap(String mapName) {
-        if (changes){
+        if (changes) {
             // write code here for handling unsaved changes...
         }
         changes = true;
@@ -159,7 +159,18 @@ public class PathFinder extends Application {
         public void handle(ActionEvent actionEvent) {
             Map<String, Location> locations = new HashMap<>();
             ListGraph<Location> graph = new ListGraph<>();
+            if (changes) {
+                Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                alert.setTitle("Warning!");
+                alert.setContentText("Unsaved changes, continue anyway?");
+                alert.setHeaderText(null);
+                Optional<ButtonType> choice = alert.showAndWait();
+                if (choice.isPresent() && choice.get() != ButtonType.OK) {
+                    return;
+                }
+            }
             try {
+
                 FileReader file = new FileReader("europa.graph");
                 BufferedReader in = new BufferedReader(file);
                 String line = in.readLine();
@@ -187,7 +198,7 @@ public class PathFinder extends Application {
                 Alert error = new Alert(Alert.AlertType.ERROR);
                 error.setTitle("Error");
                 error.setHeaderText(null);
-                error.setContentText("Could not open File: europa.graph");
+                error.setContentText("Could not find File: europa.graph");
                 error.showAndWait();
             } catch (IOException e) {
                 Alert error = new Alert(Alert.AlertType.ERROR);
