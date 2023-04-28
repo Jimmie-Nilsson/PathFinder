@@ -4,10 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d3c9e704-bf79-4d64-8dc2-e43ad615eed2" name="Changes" comment="Working on newPlace Button and map clicking(prio)">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/PathFinder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/PathFinder.java" afterDir="false" />
-    </list>
+    <list default="true" id="d3c9e704-bf79-4d64-8dc2-e43ad615eed2" name="Changes" comment="Working on newPlace Button and map clicking(prio)" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -245,7 +242,13 @@
       <option name="presentableId" value="LOCAL−00021" />
       <updated>1682666393998</updated>
     </task>
-    <option name="localTasksCounter" value="22" />
+    <task id="LOCAL−00022" summary="Working on newPlace Button and map clicking(prio)">
+      <created>1682667452903</created>
+      <option name="number" value="LOCAL−00022" />
+      <option name="presentableId" value="LOCAL−00022" />
+      <updated>1682667452903</updated>
+    </task>
+    <option name="localTasksCounter" value="23" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
