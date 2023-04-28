@@ -257,7 +257,13 @@
       <option name="presentableId" value="LOCAL−00023" />
       <updated>1682667536612</updated>
     </task>
-    <option name="localTasksCounter" value="24" />
+    <task id="LOCAL−00024" summary="Working on newPlace Button and map clicking(prio)">
+      <created>1682691219911</created>
+      <option name="number" value="LOCAL−00024" />
+      <option name="presentableId" value="LOCAL−00024" />
+      <updated>1682691219911</updated>
+    </task>
+    <option name="localTasksCounter" value="25" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">

@@ -1,20 +1,24 @@
 
 
 import javafx.application.Application;
+import javafx.beans.value.ObservableStringValue;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.event.EventType;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -28,6 +32,7 @@ import javafx.stage.WindowEvent;
 import org.w3c.dom.events.Event;
 
 import javax.imageio.ImageIO;
+import javax.swing.event.HyperlinkEvent;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.*;
@@ -101,6 +106,7 @@ public class PathFinder extends Application {
         newPlace = new Button("New Place");
         newPlace.setOnAction(new NewLocationHandler());
         newCon = new Button("New Connection");
+        newCon.setOnAction(new NewConnectionHandler());
         changeCon = new Button("Change connection");
         buttons.setAlignment(Pos.CENTER);
         buttons.getChildren().addAll(findPath, showCon, newPlace, newCon, changeCon);
@@ -340,6 +346,65 @@ public class PathFinder extends Application {
             } else if (locB != null && locB.equals(loc)) {
                 locB.flipColor();
                 locB = null;
+            }
+        }
+    }
+
+    class NewConnectionHandler implements EventHandler<ActionEvent>{
+        @Override
+        public void handle(ActionEvent event){
+            if (locA == null || locB == null){
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error!");
+                alert.setHeaderText(null);
+                alert.setContentText("Two places must be selected!");
+                alert.showAndWait();
+            }else {
+                if (graph.getEdgeBetween(locA, locB) == null){
+
+
+                    // THIS WHOLE PART IS EXPERIMENTAL
+                    // Create the GridPane for the dialog layout
+                    GridPane grid = new GridPane();
+                    grid.setHgap(10);
+                    grid.setVgap(10);
+                    grid.setPadding(new Insets(20, 150, 10, 10));
+
+                    // Add the input fields to the GridPane
+                    TextField nameField = new TextField();
+                    TextField timeField = new TextField();
+                    grid.add(new Label("Name:"), 0, 0);
+                    grid.add(nameField, 1, 0);
+                    grid.add(new Label("Time:"), 0, 1);
+                    grid.add(timeField, 1, 1);
+
+                    // Create the dialog and set its content to the GridPane
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    Node node = alert.getGraphic();
+                    Dialog<ButtonType> dialog = new Dialog<>();
+                    dialog.setTitle("Connection");
+                    dialog.setHeaderText("Connection from " + locA.getName() + " to " + locB.getName());
+                    dialog.setGraphic(node);
+                    dialog.getDialogPane().setContent(grid);
+                    dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+
+                    Optional<ButtonType> result = dialog.showAndWait();
+
+                    if (nameField.getText() != null && result.isPresent() && !nameField.getText().equals("") && timeField.getText() != null && !timeField.getText().equals("")){
+                       String name = nameField.getText();
+                       String timeText = timeField.getText();
+                       int time = Integer.parseInt(timeText);
+                       graph.connect(locA, locB, name, time);
+                        Line connection = new Line(locA.getX(), locA.getY(), locB.getX(), locB.getY());
+                        connection.setStrokeWidth(2);
+                        connection.setDisable(true); // makes lines not clickable on map easier to click nodes
+                        map.getChildren().add(connection);
+                        changes = true;
+                        // THIS IS EXPERIMENTAL MUST BE A BETTER WAY TO MAKE THIS WHOLE THING
+                    }
+
+
+                }
             }
         }
     }
