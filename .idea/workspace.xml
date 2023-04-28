@@ -4,9 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d3c9e704-bf79-4d64-8dc2-e43ad615eed2" name="Changes" comment="Working on graphics">
+    <list default="true" id="d3c9e704-bf79-4d64-8dc2-e43ad615eed2" name="Changes" comment="Working on newPlace Button and map clicking(prio)">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Location.java" beforeDir="false" afterPath="$PROJECT_DIR$/Location.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/PathFinder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/PathFinder.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -240,7 +239,13 @@
       <option name="presentableId" value="LOCAL−00020" />
       <updated>1682662686987</updated>
     </task>
-    <option name="localTasksCounter" value="21" />
+    <task id="LOCAL−00021" summary="Working on newPlace Button and map clicking(prio)">
+      <created>1682666393998</created>
+      <option name="number" value="LOCAL−00021" />
+      <option name="presentableId" value="LOCAL−00021" />
+      <updated>1682666393998</updated>
+    </task>
+    <option name="localTasksCounter" value="22" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -258,18 +263,8 @@
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
     <MESSAGE value="Should be okay" />
     <MESSAGE value="Working on graphics" />
-    <option name="LAST_COMMIT_MESSAGE" value="Working on graphics" />
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/PathFinder.java</url>
-          <line>182</line>
-          <option name="timeStamp" value="3" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
+    <MESSAGE value="Working on newPlace Button and map clicking(prio)" />
+    <option name="LAST_COMMIT_MESSAGE" value="Working on newPlace Button and map clicking(prio)" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/PathFinder$Main.ic" NAME="Main Coverage Results" MODIFIED="1682358190805" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" />

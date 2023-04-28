@@ -128,23 +128,26 @@ public class PathFinder extends Application {
         locB = null;
         if (changes) {
             // write code here for handling unsaved changes...
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Warning!");
+            alert.setContentText("Unsaved changes, continue anyway?");
+            alert.setHeaderText(null);
+            Optional<ButtonType> choice = alert.showAndWait();
+            if (choice.isPresent() && choice.get() != ButtonType.OK) {
+                return;
+            }
         }
+        root.getChildren().remove(map);
+        map = new Pane();
+        Image background = new Image(mapName);
+        ImageView bg = new ImageView(background);
+        map.getChildren().add(bg);
+        root.getChildren().add(map);
+        primaryStage.setHeight(background.getHeight() + 110); // 110 is extra pixels by other elements
+        primaryStage.setWidth(background.getWidth() + 15); // 15 is padding to make the map look better in the scene
+        buttons.setDisable(false);
         changes = true;
-        if (map == null) {
-            map = new Pane();
-            // map.setDisable(true);
-            Image background = new Image(mapName);
-            ImageView bg = new ImageView(background);
-            map.getChildren().add(bg);
-            root.getChildren().add(map);
-            primaryStage.setHeight(background.getHeight() + 110); // 110 is extra pixels by other elements
-            primaryStage.setWidth(background.getWidth() + 15); // 15 is padding to make the map look better in the scene
-            buttons.setDisable(false);
-        } else {
-            root.getChildren().remove(map);
-            map = null;
-            openMap(mapName);
-        }
+
 
     }
 
@@ -182,18 +185,17 @@ public class PathFinder extends Application {
         public void handle(ActionEvent actionEvent) {
             Map<String, Location> locations = new HashMap<>();
             graph = new ListGraph<>();
-            if (changes) {
-                Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-                alert.setTitle("Warning!");
-                alert.setContentText("Unsaved changes, continue anyway?");
-                alert.setHeaderText(null);
-                Optional<ButtonType> choice = alert.showAndWait();
-                if (choice.isPresent() && choice.get() != ButtonType.OK) {
-                    return;
-                }
-            }
+//            if (changes) {
+//                Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+//                alert.setTitle("Warning!");
+//                alert.setContentText("Unsaved changes, continue anyway?");
+//                alert.setHeaderText(null);
+//                Optional<ButtonType> choice = alert.showAndWait();
+//                if (choice.isPresent() && choice.get() != ButtonType.OK) {
+//                    return;
+//                }
+//            }
             try {
-
                 FileReader file = new FileReader("europa.graph");
                 BufferedReader in = new BufferedReader(file);
                 String line = in.readLine();
@@ -309,23 +311,23 @@ public class PathFinder extends Application {
             graph = new ListGraph<>();
             root.cursorProperty().setValue(Cursor.CROSSHAIR);
             newPlace.setDisable(true);
-            //map.setDisable(false); LOOK AT THIS LATER
-            if (newPlace.isDisabled()) {
-                map.setOnMouseClicked(mouseEvent -> {
-                    TextInputDialog nameOfLoc = new TextInputDialog("Name");
-                    nameOfLoc.setHeaderText(null);
-                    nameOfLoc.setContentText("Name of place:");
-                    Optional<String> name = nameOfLoc.showAndWait();
-                    if (name.isPresent()) {
-                        Location loc = new Location(name.get(), mouseEvent.getX(), mouseEvent.getY());
-                        graph.add(loc);
-                        loadGraphToMap(graph);
-                    }
-                    root.cursorProperty().setValue(Cursor.DEFAULT);
-                    //map.setDisable(true); LOOK AT THIS LATER
-                    newPlace.setDisable(false);
-                });
-            }
+
+
+            map.setOnMouseClicked(mouseEvent -> {
+                TextInputDialog nameOfLoc = new TextInputDialog("Name");
+                nameOfLoc.setHeaderText(null);
+                nameOfLoc.setContentText("Name of place:");
+                Optional<String> name = nameOfLoc.showAndWait();
+                if (name.isPresent()) {
+                    Location loc = new Location(name.get(), mouseEvent.getX(), mouseEvent.getY());
+                    graph.add(loc);
+                    loadGraphToMap(graph);
+                }
+                root.cursorProperty().setValue(Cursor.DEFAULT);
+                newPlace.setDisable(false);
+                map.setOnMouseClicked(null);
+            });
+
 
         }
     }
