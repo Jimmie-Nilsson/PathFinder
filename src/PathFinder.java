@@ -146,7 +146,7 @@ public class PathFinder extends Application {
         primaryStage.setHeight(background.getHeight() + 110); // 110 is extra pixels by other elements
         primaryStage.setWidth(background.getWidth() + 15); // 15 is padding to make the map look better in the scene
         buttons.setDisable(false);
-        changes = true;
+        changes = true; // this creates a bug when you open a file from a file but make no changes.
 
 
     }
@@ -185,16 +185,6 @@ public class PathFinder extends Application {
         public void handle(ActionEvent actionEvent) {
             Map<String, Location> locations = new HashMap<>();
             graph = new ListGraph<>();
-//            if (changes) {
-//                Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-//                alert.setTitle("Warning!");
-//                alert.setContentText("Unsaved changes, continue anyway?");
-//                alert.setHeaderText(null);
-//                Optional<ButtonType> choice = alert.showAndWait();
-//                if (choice.isPresent() && choice.get() != ButtonType.OK) {
-//                    return;
-//                }
-//            }
             try {
                 FileReader file = new FileReader("europa.graph");
                 BufferedReader in = new BufferedReader(file);
@@ -219,6 +209,7 @@ public class PathFinder extends Application {
                 in.close();
                 file.close();
                 loadGraphToMap(graph);
+                changes = false;
             } catch (FileNotFoundException e) {
                 Alert error = new Alert(Alert.AlertType.ERROR);
                 error.setTitle("Error");
