@@ -55,7 +55,7 @@ public class PathFinder extends Application {
     private Button newCon;
     private Button changeCon;
     private Stage primaryStage;
-    private Location locA = null, locB = null;
+    private Location locA, locB;
     private boolean changes = false;
 
 
@@ -318,6 +318,13 @@ public class PathFinder extends Application {
         public void handle(MouseEvent event) {
             Location loc = (Location) event.getSource();
             // FIX THIS so that locA is always not Null if only 1 node is selected!!
+//            if (locA == null && locB != null){
+//                locA = locB;
+//                locA.flipColor();
+//                locB.flipColor();
+//                locB = null;
+//            }
+
             if (locA == null && !loc.equals(locB)) {
                 locA = loc;
                 locA.flipColor();
@@ -367,7 +374,11 @@ public class PathFinder extends Application {
 
                     Optional<ButtonType> result = dialog.showAndWait();
 
-                    if (result.isPresent() && !nameField.getText().equals("") && !timeField.getText().equals("")) {
+                    if (result.isPresent() && result.get() == ButtonType.OK) {
+                        if (nameField.getText().equals("") || timeField.getText().equals("")){
+                            showErrorAlert("Both fields are required!");
+                            return;
+                        }
                         String name = nameField.getText();
                         String timeText = timeField.getText();
                         try {
@@ -377,17 +388,10 @@ public class PathFinder extends Application {
                             changes = true;
                             // THIS IS EXPERIMENTAL MUST BE A BETTER WAY TO MAKE THIS WHOLE THING
                         } catch (NumberFormatException e) {
-                            Alert error = new Alert(Alert.AlertType.ERROR);
-                            error.setTitle("Error!");
-                            error.setHeaderText(null);
-                            error.setContentText("Wrong format in Time field only positive whole numbers are allowed!");
-                            error.showAndWait();
+                            showErrorAlert("Wrong format in Time field only positive whole numbers are allowed!");
                         }
-                    } else if (nameField.getText().equals("") || timeField.getText().equals("") && result.isPresent() && result.get() == ButtonType.OK) {
-                        showErrorAlert("Both fields are required!");
+
                     }
-
-
                 }
             }
         }
