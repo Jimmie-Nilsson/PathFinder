@@ -1,17 +1,13 @@
 
 
 import javafx.application.Application;
-import javafx.beans.value.ObservableStringValue;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.event.EventType;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
-import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -21,7 +17,6 @@ import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
@@ -29,10 +24,8 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
-import org.w3c.dom.events.Event;
 
 import javax.imageio.ImageIO;
-import javax.swing.event.HyperlinkEvent;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.*;
@@ -41,8 +34,8 @@ public class PathFinder extends Application {
 
     // Change variable names later
     // clean up code
-    //
-    //
+    // MAKE MORE METHODS REPEATING WAY TOO MUCH CODE
+    // FIX CLICKHANDLER
     //
     private static final String MAP_NAME = "file:europa.gif";
     private ListGraph<Location> graph;
@@ -217,17 +210,9 @@ public class PathFinder extends Application {
                 loadGraphToMap(graph);
                 changes = false;
             } catch (FileNotFoundException e) {
-                Alert error = new Alert(Alert.AlertType.ERROR);
-                error.setTitle("Error");
-                error.setHeaderText(null);
-                error.setContentText("Could not find File: europa.graph");
-                error.showAndWait();
+                showErrorAlert("Could not find File: europa.graph");
             } catch (IOException e) {
-                Alert error = new Alert(Alert.AlertType.ERROR);
-                error.setTitle("Error");
-                error.setHeaderText(null);
-                error.setContentText(e.getMessage());
-                error.showAndWait();
+                showErrorAlert(e.getMessage());
             }
         }
     }
@@ -252,18 +237,10 @@ public class PathFinder extends Application {
                 file.close();
                 changes = false;
             } catch (FileNotFoundException e) {
-                Alert error = new Alert(Alert.AlertType.ERROR);
-                error.setTitle("Error");
-                error.setHeaderText(null);
-                error.setContentText("Could not write to File: europa.graph");
-                error.showAndWait();
+                showErrorAlert("Could not write to File: europa.graph");
 
             } catch (IOException e) {
-                Alert error = new Alert(Alert.AlertType.ERROR);
-                error.setTitle("Error");
-                error.setHeaderText(null);
-                error.setContentText(e.getMessage());
-                error.showAndWait();
+                showErrorAlert(e.getMessage());
             }
         }
     }
@@ -272,21 +249,27 @@ public class PathFinder extends Application {
         for (Location loc : graph.getNodes()) {
             loc.setOnMouseClicked(new ClickHandler());
             map.getChildren().add(loc);
-            Text cityName = new Text(loc.getX() + loc.getRadius(), loc.getY() + loc.getRadius(), loc.getName());
-
-            // x + 5 and y + 15 is moving them a few pixels so  that the text gets away from the nodes, so it is easier to read
-            cityName.setStrokeWidth(5);
-            cityName.setFont(Font.font("Verdana", FontWeight.BOLD, FontPosture.REGULAR, 12));
-            cityName.setDisable(true);
-            map.getChildren().add(cityName);
+            loadCityTextToMap(loc);
 
             for (Edge<Location> edge : graph.getEdgesFrom(loc)) {
-                Line connection = new Line(loc.getX(), loc.getY(), edge.getDestination().getX(), edge.getDestination().getY());
-                connection.setStrokeWidth(2);
-                connection.setDisable(true); // makes lines not clickable on map easier to click nodes
-                map.getChildren().add(connection);
+                loadConnectionToMap(loc, edge.getDestination());
             }
         }
+    }
+
+    private void loadConnectionToMap(Location locationA, Location locationB) {
+        Line connection = new Line(locationA.getX(), locationA.getY(), locationB.getX(), locationB.getY());
+        connection.setStrokeWidth(2);
+        connection.setDisable(true); // makes lines not clickable on map easier to click nodes
+        map.getChildren().add(connection);
+    }
+
+    private void loadCityTextToMap(Location city) {
+        Text cityName = new Text(city.getX() + city.getRadius(), city.getY() + city.getRadius(), city.getName());
+        cityName.setStrokeWidth(5);
+        cityName.setFont(Font.font("Verdana", FontWeight.BOLD, FontPosture.REGULAR, 12));
+        cityName.setDisable(true);
+        map.getChildren().add(cityName);
     }
 
     class SaveImgHandler implements EventHandler<ActionEvent> {
@@ -296,8 +279,7 @@ public class PathFinder extends Application {
                 BufferedImage buffImage = SwingFXUtils.fromFXImage(image, null);
                 ImageIO.write(buffImage, "png", new File("capture.png"));
             } catch (IOException e) {
-                Alert alert = new Alert(Alert.AlertType.ERROR, "" + e.getMessage());
-                alert.showAndWait();
+                showErrorAlert(e.getMessage());
             }
         }
     }
@@ -305,20 +287,21 @@ public class PathFinder extends Application {
     class NewLocationHandler implements EventHandler<ActionEvent> {
         @Override
         public void handle(ActionEvent event) {
-            graph = new ListGraph<>();
             root.cursorProperty().setValue(Cursor.CROSSHAIR);
             newPlace.setDisable(true);
-
-
             map.setOnMouseClicked(mouseEvent -> {
                 TextInputDialog nameOfLoc = new TextInputDialog("Name");
                 nameOfLoc.setHeaderText(null);
                 nameOfLoc.setContentText("Name of place:");
                 Optional<String> name = nameOfLoc.showAndWait();
-                if (name.isPresent()) {
+                if (name.isPresent() && !name.get().equals("")) {
                     Location loc = new Location(name.get(), mouseEvent.getX(), mouseEvent.getY());
                     graph.add(loc);
-                    loadGraphToMap(graph);
+                    loc.setOnMouseClicked(new ClickHandler());
+                    map.getChildren().add(loc);
+                    loadCityTextToMap(loc);
+                } else {
+                    showErrorAlert("Name can not be empty!");
                 }
                 root.cursorProperty().setValue(Cursor.DEFAULT);
                 newPlace.setDisable(false);
@@ -334,6 +317,7 @@ public class PathFinder extends Application {
         @Override
         public void handle(MouseEvent event) {
             Location loc = (Location) event.getSource();
+            // FIX THIS so that locA is always not Null if only 1 node is selected!!
             if (locA == null && !loc.equals(locB)) {
                 locA = loc;
                 locA.flipColor();
@@ -350,19 +334,13 @@ public class PathFinder extends Application {
         }
     }
 
-    class NewConnectionHandler implements EventHandler<ActionEvent>{
+    class NewConnectionHandler implements EventHandler<ActionEvent> {
         @Override
-        public void handle(ActionEvent event){
-            if (locA == null || locB == null){
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Error!");
-                alert.setHeaderText(null);
-                alert.setContentText("Two places must be selected!");
-                alert.showAndWait();
-            }else {
-                if (graph.getEdgeBetween(locA, locB) == null){
-
-
+        public void handle(ActionEvent event) {
+            if (locA == null || locB == null) {
+                showErrorAlert("Two places must be selected!");
+            } else {
+                if (graph.getEdgeBetween(locA, locB) == null) {
                     // THIS WHOLE PART IS EXPERIMENTAL
                     // Create the GridPane for the dialog layout
                     GridPane grid = new GridPane();
@@ -379,33 +357,47 @@ public class PathFinder extends Application {
                     grid.add(timeField, 1, 1);
 
                     // Create the dialog and set its content to the GridPane
-                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                    Node node = alert.getGraphic();
                     Dialog<ButtonType> dialog = new Dialog<>();
+                    // HOW DOES THIS WORK?!?!?!
+                    dialog.getDialogPane().graphicProperty().set((new Alert(Alert.AlertType.CONFIRMATION).getDialogPane().getGraphic()));
                     dialog.setTitle("Connection");
                     dialog.setHeaderText("Connection from " + locA.getName() + " to " + locB.getName());
-                    dialog.setGraphic(node);
                     dialog.getDialogPane().setContent(grid);
                     dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
                     Optional<ButtonType> result = dialog.showAndWait();
 
-                    if (nameField.getText() != null && result.isPresent() && !nameField.getText().equals("") && timeField.getText() != null && !timeField.getText().equals("")){
-                       String name = nameField.getText();
-                       String timeText = timeField.getText();
-                       int time = Integer.parseInt(timeText);
-                       graph.connect(locA, locB, name, time);
-                        Line connection = new Line(locA.getX(), locA.getY(), locB.getX(), locB.getY());
-                        connection.setStrokeWidth(2);
-                        connection.setDisable(true); // makes lines not clickable on map easier to click nodes
-                        map.getChildren().add(connection);
-                        changes = true;
-                        // THIS IS EXPERIMENTAL MUST BE A BETTER WAY TO MAKE THIS WHOLE THING
+                    if (result.isPresent() && !nameField.getText().equals("") && !timeField.getText().equals("")) {
+                        String name = nameField.getText();
+                        String timeText = timeField.getText();
+                        try {
+                            int time = Integer.parseInt(timeText);
+                            graph.connect(locA, locB, name, time);
+                            loadConnectionToMap(locA, locB);
+                            changes = true;
+                            // THIS IS EXPERIMENTAL MUST BE A BETTER WAY TO MAKE THIS WHOLE THING
+                        } catch (NumberFormatException e) {
+                            Alert error = new Alert(Alert.AlertType.ERROR);
+                            error.setTitle("Error!");
+                            error.setHeaderText(null);
+                            error.setContentText("Wrong format in Time field only positive whole numbers are allowed!");
+                            error.showAndWait();
+                        }
+                    } else if (nameField.getText().equals("") || timeField.getText().equals("") && result.isPresent() && result.get() == ButtonType.OK) {
+                        showErrorAlert("Both fields are required!");
                     }
 
 
                 }
             }
         }
+    }
+
+    private void showErrorAlert(String textToDisplay) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Error!");
+        alert.setHeaderText(null);
+        alert.setContentText(textToDisplay);
+        alert.showAndWait();
     }
 }

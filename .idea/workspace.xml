@@ -6,6 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="d3c9e704-bf79-4d64-8dc2-e43ad615eed2" name="Changes" comment="Working on newPlace Button and map clicking(prio)">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/europa1.graph" beforeDir="false" afterPath="$PROJECT_DIR$/europa1.graph" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/PathFinder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/PathFinder.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -263,7 +264,13 @@
       <option name="presentableId" value="LOCAL−00024" />
       <updated>1682691219911</updated>
     </task>
-    <option name="localTasksCounter" value="25" />
+    <task id="LOCAL−00025" summary="Working on newPlace Button and map clicking(prio)">
+      <created>1682713627648</created>
+      <option name="number" value="LOCAL−00025" />
+      <option name="presentableId" value="LOCAL−00025" />
+      <updated>1682713627648</updated>
+    </task>
+    <option name="localTasksCounter" value="26" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
