@@ -6,6 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="d3c9e704-bf79-4d64-8dc2-e43ad615eed2" name="Changes" comment="Working on newPlace Button and map clicking(prio)">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Location.java" beforeDir="false" afterPath="$PROJECT_DIR$/Location.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/PathFinder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/PathFinder.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -69,6 +70,20 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <configuration name="PathFinder (2)" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="PathFinder" />
+      <module name="PathFinder" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="PathFinder (3)" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="PathFinder" />
+      <module name="PathFinder" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="PathFinder" type="Application" factoryName="Application" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="PathFinder" />
       <module name="PathFinder" />
@@ -86,27 +101,13 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="GraphTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="PathFinder" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="src.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <option name="PACKAGE_NAME" value="src" />
-      <option name="MAIN_CLASS_NAME" value="src.GraphTest" />
-      <option name="TEST_OBJECT" value="class" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Application.PathFinder (3)" />
+        <item itemvalue="Application.PathFinder (2)" />
         <item itemvalue="Application.PathFinder (1)" />
         <item itemvalue="JUnit.GraphTest (1)" />
         <item itemvalue="Application.I1" />
-        <item itemvalue="JUnit.GraphTest" />
       </list>
     </recent_temporary>
   </component>
@@ -275,7 +276,13 @@
       <option name="presentableId" value="LOCAL−00026" />
       <updated>1682786312904</updated>
     </task>
-    <option name="localTasksCounter" value="27" />
+    <task id="LOCAL−00027" summary="Working on newPlace Button and map clicking(prio)">
+      <created>1682809439590</created>
+      <option name="number" value="LOCAL−00027" />
+      <option name="presentableId" value="LOCAL−00027" />
+      <updated>1682809439590</updated>
+    </task>
+    <option name="localTasksCounter" value="28" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">

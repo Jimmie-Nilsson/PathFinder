@@ -7,8 +7,6 @@ import javafx.scene.shape.Circle;
 
 public class Location extends Circle {
     private final String name;
-    private final double x;
-    private final double y;
     private Color color;
 
 
@@ -17,22 +15,12 @@ public class Location extends Circle {
         this.color = Color.BLUE;
         setFill(Color.BLUE);
         this.name = name;
-        this.x = x;
-        this.y = y;
-        //setOnMouseClicked(new ClickHandler());
     }
 
     public String getName() {
         return name;
     }
 
-    public double getX() {
-        return x;
-    }
-
-    public double getY() {
-        return y;
-    }
     public void flipColor(){
         if (color.equals(Color.RED)){
             this.color = Color.BLUE;
@@ -45,13 +33,13 @@ public class Location extends Circle {
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof Location other) {
-            return other.name.equals(this.name) && other.x == this.x && other.y == this.y;
+            return other.name.equals(this.name) && other.getCenterX() == this.getCenterX() && other.getCenterY() == this.getCenterY();
         }
         return false;
     }
 
     public String toString() {
-        return String.format("%s [%.01f  %.01f]", name, x, y);
+        return String.format("%s [%.01f  %.01f]", name, getCenterX(), getCenterY());
     }
 
 //    class ClickHandler implements EventHandler<MouseEvent> {

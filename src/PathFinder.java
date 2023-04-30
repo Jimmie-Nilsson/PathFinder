@@ -225,7 +225,7 @@ public class PathFinder extends Application {
                 PrintWriter out = new PrintWriter(file);
                 out.println("file:europa.gif");
                 for (Location loc : graph.getNodes()) {
-                    out.format("%s;%.01f;%.01f;", loc.getName(), loc.getX(), loc.getY());
+                    out.format("%s;%.01f;%.01f;", loc.getName(), loc.getCenterX(), loc.getCenterY());
                 }
                 out.println();
                 for (Location loc : graph.getNodes()) {
@@ -258,14 +258,14 @@ public class PathFinder extends Application {
     }
 
     private void loadConnectionToMap(Location locationA, Location locationB) {
-        Line connection = new Line(locationA.getX(), locationA.getY(), locationB.getX(), locationB.getY());
+        Line connection = new Line(locationA.getCenterX(), locationA.getCenterY(), locationB.getCenterX(), locationB.getCenterY());
         connection.setStrokeWidth(2);
         connection.setDisable(true); // makes lines not clickable on map easier to click nodes
         map.getChildren().add(connection);
     }
 
     private void loadCityTextToMap(Location city) {
-        Text cityName = new Text(city.getX() + city.getRadius(), city.getY() + city.getRadius(), city.getName());
+        Text cityName = new Text(city.getCenterX() + city.getRadius(), city.getCenterY() + city.getRadius(), city.getName());
         cityName.setStrokeWidth(5);
         cityName.setFont(Font.font("Verdana", FontWeight.BOLD, FontPosture.REGULAR, 12));
         cityName.setDisable(true);
@@ -318,13 +318,6 @@ public class PathFinder extends Application {
         public void handle(MouseEvent event) {
             Location loc = (Location) event.getSource();
             // FIX THIS so that locA is always not Null if only 1 node is selected!!
-//            if (locA == null && locB != null){
-//                locA = locB;
-//                locA.flipColor();
-//                locB.flipColor();
-//                locB = null;
-//            }
-
             if (locA == null && !loc.equals(locB)) {
                 locA = loc;
                 locA.flipColor();
@@ -334,6 +327,10 @@ public class PathFinder extends Application {
             } else if (locA != null && locA.equals(loc)) {
                 locA.flipColor();
                 locA = null;
+                if (locB != null){
+                    locA = locB;
+                    locB = null;
+                }
             } else if (locB != null && locB.equals(loc)) {
                 locB.flipColor();
                 locB = null;
@@ -348,50 +345,43 @@ public class PathFinder extends Application {
                 showErrorAlert("Two places must be selected!");
             } else {
                 if (graph.getEdgeBetween(locA, locB) == null) {
-                    // THIS WHOLE PART IS EXPERIMENTAL
-                    // Create the GridPane for the dialog layout
                     GridPane grid = new GridPane();
                     grid.setHgap(10);
                     grid.setVgap(10);
                     grid.setPadding(new Insets(20, 150, 10, 10));
+                    TextField nameInput = new TextField();
+                    TextField timeInput = new TextField();
 
-                    // Add the input fields to the GridPane
-                    TextField nameField = new TextField();
-                    TextField timeField = new TextField();
+
                     grid.add(new Label("Name:"), 0, 0);
-                    grid.add(nameField, 1, 0);
+                    grid.add(nameInput, 1, 0);
                     grid.add(new Label("Time:"), 0, 1);
-                    grid.add(timeField, 1, 1);
+                    grid.add(timeInput, 1, 1);
+                    Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                    alert.setTitle("Connection");
+                    alert.setHeaderText("Connection from " + locA.getName() + " to " + locB.getName());
+                    alert.setContentText(null); // Remove the default content
+                    alert.getDialogPane().setContent(grid);
 
-                    // Create the dialog and set its content to the GridPane
-                    Dialog<ButtonType> dialog = new Dialog<>();
-                    // HOW DOES THIS WORK?!?!?!
-                    dialog.getDialogPane().graphicProperty().set((new Alert(Alert.AlertType.CONFIRMATION).getDialogPane().getGraphic()));
-                    dialog.setTitle("Connection");
-                    dialog.setHeaderText("Connection from " + locA.getName() + " to " + locB.getName());
-                    dialog.getDialogPane().setContent(grid);
-                    dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
-
-                    Optional<ButtonType> result = dialog.showAndWait();
+                    Optional<ButtonType> result = alert.showAndWait();
 
                     if (result.isPresent() && result.get() == ButtonType.OK) {
-                        if (nameField.getText().equals("") || timeField.getText().equals("")){
+                        if (nameInput.getText().equals("") || timeInput.getText().equals("")) {
                             showErrorAlert("Both fields are required!");
                             return;
                         }
-                        String name = nameField.getText();
-                        String timeText = timeField.getText();
+                        String name = nameInput.getText();
+                        String timeText = timeInput.getText();
                         try {
                             int time = Integer.parseInt(timeText);
                             graph.connect(locA, locB, name, time);
                             loadConnectionToMap(locA, locB);
                             changes = true;
-                            // THIS IS EXPERIMENTAL MUST BE A BETTER WAY TO MAKE THIS WHOLE THING
                         } catch (NumberFormatException e) {
                             showErrorAlert("Wrong format in Time field only positive whole numbers are allowed!");
                         }
-
                     }
+
                 }
             }
         }
