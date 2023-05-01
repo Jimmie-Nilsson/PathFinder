@@ -39,8 +39,6 @@ public class PathFinder extends Application {
     // Change variable names later
     // clean up code
     // MAKE MORE METHODS REPEATING WAY TOO MUCH CODE
-    // FIX CLICKHANDLER
-    //
     private static final String MAP_NAME = "file:europa.gif";
     private ListGraph<Location> graph;
     private VBox root;
@@ -59,7 +57,8 @@ public class PathFinder extends Application {
     private Button newCon;
     private Button changeCon;
     private Stage primaryStage;
-    private Location locA, locB;
+    private Location locA;
+    private Location locB;
     private boolean changes;
 
 
@@ -99,7 +98,7 @@ public class PathFinder extends Application {
         buttons.setPadding(new Insets(10));
         buttons.setHgap(10);
         findPath = new Button("Find Path");
-        findPath.setOnAction(new showPathHandler());
+        findPath.setOnAction(new ShowPathHandler());
         showCon = new Button("Show Connection");
         showCon.setOnAction(new ConnectionHandler());
         newPlace = new Button("New Place");
@@ -174,6 +173,7 @@ public class PathFinder extends Application {
         changeCon.setId("btnChangeConnection");
         newCon.setId("btnNewConnection");
         map.setId("outputArea");
+
 
     }
 
@@ -318,7 +318,7 @@ public class PathFinder extends Application {
                     loc.setOnMouseClicked(new ClickHandler());
                     map.getChildren().add(loc);
                     loadCityTextToMap(loc);
-                } else {
+                } else if (name.isPresent()) {
                     showErrorAlert("Name can not be empty!");
                 }
                 root.cursorProperty().setValue(Cursor.DEFAULT);
@@ -434,7 +434,7 @@ public class PathFinder extends Application {
         }
     }
 
-    class showPathHandler implements EventHandler<ActionEvent>{
+    class ShowPathHandler implements EventHandler<ActionEvent>{
         @Override
         public void handle(ActionEvent event){
             // use Path exists and Gather path her

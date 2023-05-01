@@ -4,7 +4,6 @@
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 
-import java.util.Collections;
 import java.util.Objects;
 
 public class Location extends Circle {
