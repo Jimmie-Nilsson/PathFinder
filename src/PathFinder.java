@@ -1,3 +1,7 @@
+// PROG2 VT2023, Inlämningsuppgift, del 2
+// Grupp 230
+// Jimmie Nilsson jini6619
+
 
 
 import javafx.application.Application;
@@ -95,6 +99,7 @@ public class PathFinder extends Application {
         buttons.setPadding(new Insets(10));
         buttons.setHgap(10);
         findPath = new Button("Find Path");
+        findPath.setOnAction(new showPathHandler());
         showCon = new Button("Show Connection");
         showCon.setOnAction(new ConnectionHandler());
         newPlace = new Button("New Place");
@@ -185,6 +190,8 @@ public class PathFinder extends Application {
         public void handle(ActionEvent actionEvent) {
             Map<String, Location> locations = new HashMap<>();
             graph = new ListGraph<>();
+            locA = null;
+            locB = null;
             try {
                 FileReader file = new FileReader("europa.graph");
                 BufferedReader in = new BufferedReader(file);
@@ -222,7 +229,7 @@ public class PathFinder extends Application {
         @Override
         public void handle(ActionEvent event) {
             try {
-                FileWriter file = new FileWriter("europa1.graph");// change this later this is for testing
+                FileWriter file = new FileWriter("europa.graph");
                 PrintWriter out = new PrintWriter(file);
                 out.println("file:europa.gif");
                 for (Location loc : graph.getNodes()) {
@@ -383,12 +390,17 @@ public class PathFinder extends Application {
                         showErrorAlert("No connection between: " +locA.getName() + " and: " + locB.getName());
                         return;
                     }
+
+
                     if (event.getSource().equals(showCon)) {
                         nameInput.setText(graph.getEdgeBetween(locA, locB).getName());
                         nameInput.setEditable(false);
                         timeInput.setText("" + graph.getEdgeBetween(locA, locB).getWeight());
                         timeInput.setEditable(false);
                         alert.showAndWait();
+
+
+
                     }else if (event.getSource().equals(changeCon)){
                         nameInput.setText(graph.getEdgeBetween(locA, locB).getName());
                         nameInput.setEditable(false);
@@ -416,18 +428,36 @@ public class PathFinder extends Application {
         @Override
         public void handle(ActionEvent event){
             // use Path exists and Gather path her
+            if (locA == null || locB == null){
+                showErrorAlert("Two Locations must be selected");
+                return;
+            }
             if (!graph.pathExists(locA, locB)){
                 showErrorAlert("No path between: " + locA.getName() + " and " + locB.getName());
                 return;
             }
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle("Connection");
-            alert.setHeaderText("Path between " + locA.getName() + " to " + locB.getName());
-            alert.setContentText(null); // Remove the default content
+            alert.setHeaderText("Path from " + locA.getName() + " to " + locB.getName() + ":");
+           // alert.setContentText(null); // Remove the default content
             TextArea textArea = new TextArea();
             alert.getDialogPane().setContent(textArea);
             ArrayList<Edge<Location>> locations = new ArrayList<>(graph.getPath(locA, locB));
-
+            StringBuilder sb = new StringBuilder();
+            int totalTime = 0;
+            for (Edge<Location> edge : locations){
+               // sb.append(edge); this doesn't work the way I want it too.
+                sb.append("to ");
+                sb.append(edge.getDestination().getName());
+                sb.append(" by ");
+                sb.append(edge.getName());
+                sb.append(" takes ");
+                sb.append(edge.getWeight());
+                sb.append("\n");
+                totalTime += edge.getWeight();
+            }
+            textArea.setText(sb.toString() + "Total " + totalTime);
+            alert.showAndWait();
         }
     }
 

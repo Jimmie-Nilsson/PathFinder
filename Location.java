@@ -1,7 +1,6 @@
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.scene.Node;
-import javafx.scene.input.MouseEvent;
+// PROG2 VT2023, Inlämningsuppgift, del 2
+// Grupp 230
+// Jimmie Nilsson jini6619
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 

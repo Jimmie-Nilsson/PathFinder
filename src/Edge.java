@@ -37,6 +37,6 @@ public class Edge<T> {
     }
 
     public String toString() {
-        return String.format("till "+destination +" med " +getName() + " tar %d",weight);
+        return String.format("till "+ destination +" med " +getName() + " tar %d",weight);
     }
 }
