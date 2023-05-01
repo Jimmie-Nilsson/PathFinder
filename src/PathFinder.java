@@ -357,7 +357,7 @@ public class PathFinder extends Application {
                 Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
                 alert.setTitle("Connection");
                 alert.setHeaderText("Connection from " + locA.getName() + " to " + locB.getName());
-                alert.setContentText(null); // Remove the default content
+                //alert.setContentText(null); // Remove the default content DONT THINK THIS IS NEEDED
                 alert.getDialogPane().setContent(grid);
 
                 if (graph.getEdgeBetween(locA, locB) == null && event.getSource().equals(newCon)) {
@@ -415,7 +415,19 @@ public class PathFinder extends Application {
     class showPathHandler implements EventHandler<ActionEvent>{
         @Override
         public void handle(ActionEvent event){
-            // use Path exists and Gather path here
+            // use Path exists and Gather path her
+            if (!graph.pathExists(locA, locB)){
+                showErrorAlert("No path between: " + locA.getName() + " and " + locB.getName());
+                return;
+            }
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Connection");
+            alert.setHeaderText("Path between " + locA.getName() + " to " + locB.getName());
+            alert.setContentText(null); // Remove the default content
+            TextArea textArea = new TextArea();
+            alert.getDialogPane().setContent(textArea);
+            ArrayList<Edge<Location>> locations = new ArrayList<>(graph.getPath(locA, locB));
+
         }
     }
 

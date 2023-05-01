@@ -287,7 +287,13 @@
       <option name="presentableId" value="LOCAL−00028" />
       <updated>1682886931982</updated>
     </task>
-    <option name="localTasksCounter" value="29" />
+    <task id="LOCAL−00029" summary="New Connection should work also Click handler should work as it should now">
+      <created>1682890539994</created>
+      <option name="number" value="LOCAL−00029" />
+      <option name="presentableId" value="LOCAL−00029" />
+      <updated>1682890539994</updated>
+    </task>
+    <option name="localTasksCounter" value="30" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
