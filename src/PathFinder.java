@@ -60,7 +60,7 @@ public class PathFinder extends Application {
     private Button changeCon;
     private Stage primaryStage;
     private Location locA, locB;
-    private boolean changes = false;
+    private boolean changes;
 
 
     public void start(Stage primaryStage) {
@@ -113,6 +113,9 @@ public class PathFinder extends Application {
         buttons.setDisable(true);
 
 
+        map = new Pane();
+        root.getChildren().add(map);
+        map.setVisible(false);
         root.getChildren().add(menuBar);
         root.getChildren().add(buttons);
         Scene scene = new Scene(root, 550, 100);
@@ -151,6 +154,7 @@ public class PathFinder extends Application {
         primaryStage.setHeight(background.getHeight() + 110); // 110 is extra pixels by other elements
         primaryStage.setWidth(background.getWidth() + 15); // 15 is padding to make the map look better in the scene
         buttons.setDisable(false);
+        map.setVisible(true);
         changes = true; // this creates a bug when you open a file from a file but make no changes.
 
 
@@ -164,7 +168,13 @@ public class PathFinder extends Application {
         menuSave.setId("menuSaveFile");
         menuSaveImg.setId("menuSaveImage");
         menuExit.setId("menuExit");
-        // add buttons here later
+        findPath.setId("btnFindPath");
+        showCon.setId("btnShowConnection");
+        newPlace.setId("btnNewPlace");
+        changeCon.setId("btnChangeConnection");
+        newCon.setId("btnNewConnection");
+        map.setId("outputArea");
+
     }
 
 

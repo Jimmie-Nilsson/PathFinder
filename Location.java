@@ -4,6 +4,9 @@
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 
+import java.util.Collections;
+import java.util.Objects;
+
 public class Location extends Circle {
     private final String name;
     private Color color;
@@ -36,6 +39,11 @@ public class Location extends Circle {
         }
         return false;
     }
+
+   @Override
+   public int hashCode(){
+        return Objects.hash(name,getCenterX(),getCenterY());
+   }
 
     public String toString() {
         return String.format("%s [%.01f  %.01f]", name, getCenterX(), getCenterY());
