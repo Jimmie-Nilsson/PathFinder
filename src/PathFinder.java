@@ -42,6 +42,7 @@ public class PathFinder extends Application {
     // clean up code
     // MAKE MORE METHODS REPEATING WAY TOO MUCH CODE
     // CHANGE OPEN MAP AND SAVE MAP FROM europa1 to europa
+    // FIX NEW MAP IMPLEMENTATION
     private static final String MAP_NAME = "file:europa.gif";
     private ListGraph<Location> graph = new ListGraph<>();
     private VBox root;
