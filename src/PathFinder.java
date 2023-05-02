@@ -32,6 +32,8 @@ import javafx.stage.WindowEvent;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.*;
 
 public class PathFinder extends Application {
@@ -39,8 +41,9 @@ public class PathFinder extends Application {
     // Change variable names later
     // clean up code
     // MAKE MORE METHODS REPEATING WAY TOO MUCH CODE
+    // CHANGE OPEN MAP AND SAVE MAP FROM europa1 to europa
     private static final String MAP_NAME = "file:europa.gif";
-    private ListGraph<Location> graph;
+    private ListGraph<Location> graph = new ListGraph<>();
     private VBox root;
     private Pane map;
     private MenuBar menuBar;
@@ -203,7 +206,7 @@ public class PathFinder extends Application {
             locA = null;
             locB = null;
             try {
-                FileReader file = new FileReader("europa.graph");
+                FileReader file = new FileReader("europa1.graph"); // CHANGE THIS
                 BufferedReader in = new BufferedReader(file);
                 String line = in.readLine();
                 openMap(line);
@@ -239,11 +242,14 @@ public class PathFinder extends Application {
         @Override
         public void handle(ActionEvent event) {
             try {
-                FileWriter file = new FileWriter("europa.graph");
+                FileWriter file = new FileWriter("europa1.graph"); // CHANGE THIS
                 PrintWriter out = new PrintWriter(file);
                 out.println("file:europa.gif");
+                DecimalFormat df = new DecimalFormat("###.##");
+
                 for (Location loc : graph.getNodes()) {
-                    out.format("%s;%.01f;%.01f;", loc.getName(), loc.getCenterX(), loc.getCenterY());
+                    // out.format("%s;%.01f;%.01f;", loc.getName(), loc.getCenterX(), loc.getCenterY()); THIS DOESN'T WORK BECAUSE OF LOCALE SETTINGS
+                    out.format("%s;%.05s;%.05s;", loc.getName(), loc.getCenterX(), loc.getCenterY());
                 }
                 out.println();
                 for (Location loc : graph.getNodes()) {
@@ -268,6 +274,7 @@ public class PathFinder extends Application {
             loc.setOnMouseClicked(new ClickHandler());
             map.getChildren().add(loc);
             loadCityTextToMap(loc);
+            loc.setId(loc.getName()); // check this later
 
             for (Edge<Location> edge : graph.getEdgesFrom(loc)) {
                 loadConnectionToMap(loc, edge.getDestination());
@@ -374,7 +381,6 @@ public class PathFinder extends Application {
                 Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
                 alert.setTitle("Connection");
                 alert.setHeaderText("Connection from " + locA.getName() + " to " + locB.getName());
-                //alert.setContentText(null); // Remove the default content DONT THINK THIS IS NEEDED
                 alert.getDialogPane().setContent(grid);
 
                 if (graph.getEdgeBetween(locA, locB) == null && event.getSource().equals(newCon)) {
@@ -419,10 +425,12 @@ public class PathFinder extends Application {
                         Optional<ButtonType> result = alert.showAndWait();
                         if (result.isPresent() && result.get() == ButtonType.OK){
                             try{
-                                String name = nameInput.getText();
                                 int time = Integer.parseInt(timeInput.getText());
-                                graph.disconnect(locA, locB);
-                                graph.connect(locA, locB, name, time);
+                                if (time < 0){
+                                    showErrorAlert("Only positive numbers allowed!");
+                                    return;
+                                }
+                                graph.setConnectionWeight(locA, locB, time);
                                 changes = true;
                             }catch (NumberFormatException e){
                                 showErrorAlert("Wrong format in Time field only positive whole numbers are allowed!");
@@ -449,7 +457,6 @@ public class PathFinder extends Application {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle("Connection");
             alert.setHeaderText("Path from " + locA.getName() + " to " + locB.getName() + ":");
-           // alert.setContentText(null); // Remove the default content
             TextArea textArea = new TextArea();
             alert.getDialogPane().setContent(textArea);
             ArrayList<Edge<Location>> locations = new ArrayList<>(graph.getPath(locA, locB));
