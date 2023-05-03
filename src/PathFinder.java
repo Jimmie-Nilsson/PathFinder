@@ -33,7 +33,6 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
 import java.util.*;
 
 public class PathFinder extends Application {
@@ -73,7 +72,10 @@ public class PathFinder extends Application {
         fileMenu = new Menu("File");
 
         menuFileNewMap = new MenuItem("New Map");
-        menuFileNewMap.setOnAction(event -> openMap(MAP_NAME));
+        menuFileNewMap.setOnAction(event -> {
+            openMap(MAP_NAME);
+            changes = true;
+        } );
 
         menuFileOpen = new MenuItem("Open");
         menuFileOpen.setOnAction(new OpenMapHandler());
@@ -138,6 +140,7 @@ public class PathFinder extends Application {
     private void openMap(String mapName) {
         locA = null;
         locB = null;
+        graph = new ListGraph<>();
         if (changes) {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle("Warning!");
@@ -158,9 +161,6 @@ public class PathFinder extends Application {
         primaryStage.setWidth(background.getWidth() + 15); // 15 is padding to make the map look better in the scene
         buttons.setDisable(false);
         map.setVisible(true);
-        changes = true; // this creates a bug when you open a file from a file but make no changes.
-
-
     }
 
     private void setIDs() {
