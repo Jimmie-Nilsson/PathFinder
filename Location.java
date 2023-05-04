@@ -48,16 +48,4 @@ public class Location extends Circle {
         return String.format("%s [%.01f  %.01f]", name, getCenterX(), getCenterY());
     }
 
-//    class ClickHandler implements EventHandler<MouseEvent> {
-//        @Override
-//        public void handle(MouseEvent event) {
-//            if (color.equals(Color.BLUE)) {
-//                setFill(Color.RED);
-//                color = Color.RED;
-//            } else {
-//                setFill(Color.BLUE);
-//                color = Color.BLUE;
-//            }
-//        }
-//    }
 }

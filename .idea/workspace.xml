@@ -5,10 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d3c9e704-bf79-4d64-8dc2-e43ad615eed2" name="Changes" comment="New Connection should work also Click handler should work as it should now">
+      <change afterPath="$PROJECT_DIR$/ConnectionAlert.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/europa.graph" beforeDir="false" afterPath="$PROJECT_DIR$/europa.graph" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/europa1.graph" beforeDir="false" afterPath="$PROJECT_DIR$/europa1.graph" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ListGraph.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ListGraph.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Location.java" beforeDir="false" afterPath="$PROJECT_DIR$/Location.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/PathFinder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/PathFinder.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -332,7 +331,13 @@
       <option name="presentableId" value="LOCAL−00035" />
       <updated>1683028388352</updated>
     </task>
-    <option name="localTasksCounter" value="36" />
+    <task id="LOCAL−00036" summary="New Connection should work also Click handler should work as it should now">
+      <created>1683208761748</created>
+      <option name="number" value="LOCAL−00036" />
+      <option name="presentableId" value="LOCAL−00036" />
+      <updated>1683208761748</updated>
+    </task>
+    <option name="localTasksCounter" value="37" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">

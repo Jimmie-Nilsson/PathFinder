@@ -3,7 +3,6 @@
 // Jimmie Nilsson jini6619
 
 
-
 import javafx.application.Application;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
@@ -18,7 +17,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Line;
@@ -39,7 +37,9 @@ public class PathFinder extends Application {
     // Change variable names later
     // clean up code
     // MAKE MORE METHODS REPEATING WAY TOO MUCH CODE
-    // CHANGE OPEN MAP AND SAVE MAP FROM europa1 to europa
+    // MAKE NEW CLASSES FOR SHOW CON AND CHANGE CON
+    // MAKE CUSTOM ALERT CLASS ALSO
+    // FIX CONNECTIONHANDLER SO TIME MAKES AN ERROR
     private static final String MAP_NAME = "file:europa.gif";
     private ListGraph<Location> graph = new ListGraph<>();
     private VBox root;
@@ -73,7 +73,7 @@ public class PathFinder extends Application {
         menuFileNewMap.setOnAction(event -> {
             openMap(MAP_NAME);
             changes = true;
-        } );
+        });
 
         menuFileOpen = new MenuItem("Open");
         menuFileOpen.setOnAction(new OpenMapHandler());
@@ -104,13 +104,13 @@ public class PathFinder extends Application {
         findPath = new Button("Find Path");
         findPath.setOnAction(new ShowPathHandler());
         showCon = new Button("Show Connection");
-        showCon.setOnAction(new ConnectionHandler());
+        showCon.setOnAction(new ShowConnectionHandler());
         newPlace = new Button("New Place");
         newPlace.setOnAction(new NewLocationHandler());
         newCon = new Button("New Connection");
-        newCon.setOnAction(new ConnectionHandler());
+        newCon.setOnAction(new NewConnectionHandler());
         changeCon = new Button("Change connection");
-        changeCon.setOnAction(new ConnectionHandler());
+        changeCon.setOnAction(new ChangeConnectionHandler());
         buttons.setAlignment(Pos.CENTER);
         buttons.getChildren().addAll(findPath, showCon, newPlace, newCon, changeCon);
         buttons.setDisable(true);
@@ -222,7 +222,7 @@ public class PathFinder extends Application {
                 openMap(line);
                 line = in.readLine();
                 String[] tokens = line.split(";");
-                if (tokens.length < 3){
+                if (tokens.length < 3) {
                     showErrorAlert("File does not contain any Locations");
                     return;
                 }
@@ -377,99 +377,117 @@ public class PathFinder extends Application {
         }
     }
 
-    class ConnectionHandler implements EventHandler<ActionEvent> {
+
+    class ChangeConnectionHandler implements EventHandler<ActionEvent> {
+        @Override
+        public void handle(ActionEvent event) {
+
+        }
+    }
+
+    class ShowConnectionHandler implements EventHandler<ActionEvent> {
         @Override
         public void handle(ActionEvent event) {
             if (locA == null || locB == null) {
                 showErrorAlert("Two places must be selected!");
-            } else {
-                GridPane grid = new GridPane();
-                grid.setHgap(10);
-                grid.setVgap(10);
-                grid.setPadding(new Insets(20, 150, 10, 10));
-                TextField nameInput = new TextField();
-                TextField timeInput = new TextField();
-                grid.add(new Label("Name:"), 0, 0);
-                grid.add(nameInput, 1, 0);
-                grid.add(new Label("Time:"), 0, 1);
-                grid.add(timeInput, 1, 1);
-                Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-                alert.setTitle("Connection");
-                alert.setHeaderText("Connection from " + locA.getName() + " to " + locB.getName());
-                alert.getDialogPane().setContent(grid);
-
-                if (graph.getEdgeBetween(locA, locB) != null && event.getSource().equals(newCon)){
-                    showErrorAlert("Connection already present only 1 connection allowed!");
-                    return;
-                }
-
-                if (graph.getEdgeBetween(locA, locB) == null && event.getSource().equals(newCon)) {
-                    Optional<ButtonType> result = alert.showAndWait();
-                    if (result.isPresent() && result.get() == ButtonType.OK) {
-                        if (nameInput.getText().equals("") || timeInput.getText().equals("")) {
-                            showErrorAlert("Both fields are required!");
-                            return;
-                        }
-                        String name = nameInput.getText();
-                        String timeText = timeInput.getText();
-                        try {
-                            int time = Integer.parseInt(timeText);
-                            graph.connect(locA, locB, name, time);
-                            loadConnectionToMap(locA, locB);
-                            changes = true;
-                        } catch (NumberFormatException e) {
-                            showErrorAlert("Wrong format in Time field only positive whole numbers are allowed!");
-                        }
-                    }
-                }else if (event.getSource().equals(showCon) || event.getSource().equals(changeCon)) {
-                    if (graph.getEdgeBetween(locA, locB) == null){
-                        showErrorAlert("No connection between: " +locA.getName() + " and: " + locB.getName());
-                        return;
-                    }
-
-
-                    if (event.getSource().equals(showCon)) {
-                        nameInput.setText(graph.getEdgeBetween(locA, locB).getName());
-                        nameInput.setEditable(false);
-                        timeInput.setText("" + graph.getEdgeBetween(locA, locB).getWeight());
-                        timeInput.setEditable(false);
-                        alert.showAndWait();
-
-
-
-                    }else if (event.getSource().equals(changeCon)){
-                        nameInput.setText(graph.getEdgeBetween(locA, locB).getName());
-                        nameInput.setEditable(false);
-                        timeInput.setEditable(true);
-                        timeInput.setText("");
-                        Optional<ButtonType> result = alert.showAndWait();
-                        if (result.isPresent() && result.get() == ButtonType.OK){
-                            try{
-                                int time = Integer.parseInt(timeInput.getText());
-                                if (time < 0){
-                                    showErrorAlert("Only positive numbers allowed!");
-                                    return;
-                                }
-                                graph.setConnectionWeight(locA, locB, time);
-                                changes = true;
-                            }catch (NumberFormatException e){
-                                showErrorAlert("Wrong format in Time field only positive whole numbers are allowed!");
-                            }
-                        }
-                    }
-                }
+                return;
             }
+            if (graph.getEdgeBetween(locA, locB) == null) {
+                showErrorAlert("No connection between: " + locA.getName() + " and: " + locB.getName());
+                return;
+            }
+            ConnectionAlert alert = new ConnectionAlert("Name:", "Time:");
+            alert.setTitle("Connection");
+            alert.setHeaderText("Connection from " + locA.getName() + " to " + locB.getName());
+            alert.setName(graph.getEdgeBetween(locA, locB).getName());
+            alert.setTime("" + graph.getEdgeBetween(locA, locB).getWeight());
+            alert.setEditableOne(false);
+            alert.setEditableTwo(false);
+            alert.showAndWait();
         }
     }
 
-    class ShowPathHandler implements EventHandler<ActionEvent>{
+    class NewConnectionHandler implements EventHandler<ActionEvent> {
         @Override
-        public void handle(ActionEvent event){
-            if (locA == null || locB == null){
+        public void handle(ActionEvent event) {
+            if (locA == null || locB == null) {
+                showErrorAlert("Two places must be selected!");
+                return;
+            }
+            if (graph.getEdgeBetween(locA, locB) != null) {
+                showErrorAlert("Connection already present only 1 connection allowed!");
+                return;
+            }
+            ConnectionAlert alert = new ConnectionAlert("Name:", "Time:");
+            alert.setTitle("Connection");
+            alert.setHeaderText("Connection from " + locA.getName() + " to " + locB.getName());
+            try {
+                Optional<ButtonType> result = alert.showAndWait();
+                if (result.isPresent() && result.get() == ButtonType.OK) {
+                    if (alert.getName().equals("") || alert.getTime().equals("")) {
+                        showErrorAlert("Both fields are required!");
+                        return;
+                    }
+                    String name = alert.getName();
+                    int time = Integer.parseInt(alert.getTime());
+                    graph.connect(locA, locB, name, time);
+                    loadConnectionToMap(locA, locB);
+                    changes = true;
+                }
+            } catch (NumberFormatException error) {
+                showErrorAlert("Wrong format in Time field only positive whole numbers are allowed!");
+            } catch (IllegalArgumentException error) {
+                showErrorAlert("Time is not allowed to be negative!");
+            }
+//            if (event.getSource().equals(showCon) || event.getSource().equals(changeCon)) {
+//                if (graph.getEdgeBetween(locA, locB) == null) {
+//                    showErrorAlert("No connection between: " + locA.getName() + " and: " + locB.getName());
+//                    return;
+//                }
+
+
+//                    if (event.getSource().equals(showCon)) {
+//                        nameInput.setText(graph.getEdgeBetween(locA, locB).getName());
+//                        nameInput.setEditable(false);
+//                        timeInput.setText("" + graph.getEdgeBetween(locA, locB).getWeight());
+//                        timeInput.setEditable(false);
+//                        alert.showAndWait();
+//
+//
+//
+//                    }else if (event.getSource().equals(changeCon)){
+//                        nameInput.setText(graph.getEdgeBetween(locA, locB).getName());
+//                        nameInput.setEditable(false);
+//                        timeInput.setEditable(true);
+//                        timeInput.setText("");
+//                        Optional<ButtonType> result = alert.showAndWait();
+//                        if (result.isPresent() && result.get() == ButtonType.OK){
+//                            try{
+//                                int time = Integer.parseInt(timeInput.getText());
+//                                if (time < 0){
+//                                    showErrorAlert("Only positive numbers allowed!");
+//                                    return;
+//                                }
+//                                graph.setConnectionWeight(locA, locB, time);
+//                                changes = true;
+//                            }catch (NumberFormatException e){
+//                                showErrorAlert("Wrong format in Time field only positive whole numbers are allowed!");
+//                            }
+//                        }
+//                    }
+//            }
+
+        }
+    }
+
+    class ShowPathHandler implements EventHandler<ActionEvent> {
+        @Override
+        public void handle(ActionEvent event) {
+            if (locA == null || locB == null) {
                 showErrorAlert("Two Locations must be selected");
                 return;
             }
-            if (!graph.pathExists(locA, locB)){
+            if (!graph.pathExists(locA, locB)) {
                 showErrorAlert("No path between: " + locA.getName() + " and " + locB.getName());
                 return;
             }
@@ -481,8 +499,8 @@ public class PathFinder extends Application {
             ArrayList<Edge<Location>> locations = new ArrayList<>(graph.getPath(locA, locB));
             StringBuilder sb = new StringBuilder();
             int totalTime = 0;
-            for (Edge<Location> edge : locations){
-               // sb.append(edge); this doesn't work the way I want it too.
+            for (Edge<Location> edge : locations) {
+                // sb.append(edge); this doesn't work the way I want it too.
                 sb.append("to ");
                 sb.append(edge.getDestination().getName());
                 sb.append(" by ");
