@@ -8,7 +8,6 @@ public class ListGraph<T> implements Graph<T> {
 
     private Map<T, Set<Edge<T>>> nodes = new HashMap<>();
 
-
     public void add(T node) {
         nodes.putIfAbsent(node, new HashSet<>());
     }
@@ -103,7 +102,6 @@ public class ListGraph<T> implements Graph<T> {
 
     @Override
     public Collection<Edge<T>> getEdgesFrom(T node) {
-
         checkNode(node);
         return nodes.get(node);
     }
@@ -121,7 +119,6 @@ public class ListGraph<T> implements Graph<T> {
 
     @Override
     public void disconnect(T nodeA, T nodeB) {
-
         checkNodes(nodeA, nodeB);
         Edge<T> edgeA = getEdgeBetween(nodeA, nodeB);
         Edge<T> edgeB = getEdgeBetween(nodeB, nodeA);
@@ -143,7 +140,6 @@ public class ListGraph<T> implements Graph<T> {
     private void checkEdges(Edge<T> edgeA, Edge<T> edgeB) {
         if (edgeA == null || edgeB == null)
             throw new IllegalStateException();
-
     }
 
     private void depthFirstSearch(T from, T destination, Set<T> visited) {
@@ -162,8 +158,6 @@ public class ListGraph<T> implements Graph<T> {
     private List<Edge<T>> gatherPath(T from, T to, Map<T,T> connections){
         LinkedList<Edge<T>> path = new LinkedList<>();
         T current = to;
-
-
         while (!current.equals(from)){
             T next = connections.get(current);
             Edge<T> edge = getEdgeBetween(next, current);

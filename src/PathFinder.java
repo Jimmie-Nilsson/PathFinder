@@ -32,7 +32,6 @@ import javafx.stage.WindowEvent;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.*;
-import java.text.DecimalFormat;
 import java.util.*;
 
 public class PathFinder extends Application {
@@ -41,7 +40,6 @@ public class PathFinder extends Application {
     // clean up code
     // MAKE MORE METHODS REPEATING WAY TOO MUCH CODE
     // CHANGE OPEN MAP AND SAVE MAP FROM europa1 to europa
-    // FIX NEW MAP IMPLEMENTATION
     private static final String MAP_NAME = "file:europa.gif";
     private ListGraph<Location> graph = new ListGraph<>();
     private VBox root;
@@ -119,10 +117,10 @@ public class PathFinder extends Application {
 
 
         map = new Pane();
-        root.getChildren().add(map);
         map.setVisible(false);
         root.getChildren().add(menuBar);
         root.getChildren().add(buttons);
+        root.getChildren().add(map);
         Scene scene = new Scene(root, 550, 100);
         primaryStage.setOnCloseRequest(new ExitHandler());
         primaryStage.setScene(scene);
@@ -151,12 +149,12 @@ public class PathFinder extends Application {
                 return;
             }
         }
-        root.getChildren().remove(map);
-        map = new Pane();
+
+        map.getChildren().clear();
         Image background = new Image(mapName);
         ImageView bg = new ImageView(background);
         map.getChildren().add(bg);
-        root.getChildren().add(map);
+        // I could add all the elements here, but it doesn't look as nice as if I did it manually.
         primaryStage.setHeight(background.getHeight() + 110); // 110 is extra pixels by other elements
         primaryStage.setWidth(background.getWidth() + 15); // 15 is padding to make the map look better in the scene
         buttons.setDisable(false);
@@ -206,13 +204,28 @@ public class PathFinder extends Application {
             graph = new ListGraph<>();
             locA = null;
             locB = null;
+            if (changes) {
+                Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                alert.setTitle("Warning!");
+                alert.setContentText("Unsaved changes, continue anyway?");
+                alert.setHeaderText(null);
+                Optional<ButtonType> choice = alert.showAndWait();
+                if (choice.isPresent() && choice.get() != ButtonType.OK) {
+                    return;
+                }
+                changes = false;
+            }
             try {
-                FileReader file = new FileReader("europa1.graph"); // CHANGE THIS
+                FileReader file = new FileReader("europa.graph");
                 BufferedReader in = new BufferedReader(file);
                 String line = in.readLine();
                 openMap(line);
                 line = in.readLine();
                 String[] tokens = line.split(";");
+                if (tokens.length < 3){
+                    showErrorAlert("File does not contain any Locations");
+                    return;
+                }
                 for (int i = 0; i < tokens.length; i += 3) {
                     Location loc = new Location(tokens[i], Double.parseDouble(tokens[i + 1]), Double.parseDouble(tokens[i + 2]));
                     graph.add(loc);
@@ -230,7 +243,6 @@ public class PathFinder extends Application {
                 in.close();
                 file.close();
                 loadGraphToMap(graph);
-                changes = false;
             } catch (FileNotFoundException e) {
                 showErrorAlert("Could not find File: europa.graph");
             } catch (IOException e) {
@@ -243,10 +255,9 @@ public class PathFinder extends Application {
         @Override
         public void handle(ActionEvent event) {
             try {
-                FileWriter file = new FileWriter("europa1.graph"); // CHANGE THIS
+                FileWriter file = new FileWriter("europa.graph");
                 PrintWriter out = new PrintWriter(file);
                 out.println("file:europa.gif");
-                DecimalFormat df = new DecimalFormat("###.##");
 
                 for (Location loc : graph.getNodes()) {
                     // out.format("%s;%.01f;%.01f;", loc.getName(), loc.getCenterX(), loc.getCenterY()); THIS DOESN'T WORK BECAUSE OF LOCALE SETTINGS
@@ -275,7 +286,7 @@ public class PathFinder extends Application {
             loc.setOnMouseClicked(new ClickHandler());
             map.getChildren().add(loc);
             loadCityTextToMap(loc);
-            loc.setId(loc.getName()); // check this later
+            loc.setId(loc.getName());
 
             for (Edge<Location> edge : graph.getEdgesFrom(loc)) {
                 loadConnectionToMap(loc, edge.getDestination());
@@ -326,6 +337,9 @@ public class PathFinder extends Application {
                     loc.setOnMouseClicked(new ClickHandler());
                     map.getChildren().add(loc);
                     loadCityTextToMap(loc);
+                    loc.setId(loc.getName()); // check this later
+                    changes = true;
+
                 } else if (name.isPresent()) {
                     showErrorAlert("Name can not be empty!");
                 }
@@ -383,6 +397,11 @@ public class PathFinder extends Application {
                 alert.setTitle("Connection");
                 alert.setHeaderText("Connection from " + locA.getName() + " to " + locB.getName());
                 alert.getDialogPane().setContent(grid);
+
+                if (graph.getEdgeBetween(locA, locB) != null && event.getSource().equals(newCon)){
+                    showErrorAlert("Connection already present only 1 connection allowed!");
+                    return;
+                }
 
                 if (graph.getEdgeBetween(locA, locB) == null && event.getSource().equals(newCon)) {
                     Optional<ButtonType> result = alert.showAndWait();
@@ -446,7 +465,6 @@ public class PathFinder extends Application {
     class ShowPathHandler implements EventHandler<ActionEvent>{
         @Override
         public void handle(ActionEvent event){
-            // use Path exists and Gather path her
             if (locA == null || locB == null){
                 showErrorAlert("Two Locations must be selected");
                 return;
@@ -474,7 +492,7 @@ public class PathFinder extends Application {
                 sb.append("\n");
                 totalTime += edge.getWeight();
             }
-            textArea.setText(sb.toString() + "Total " + totalTime);
+            textArea.setText(sb + "Total " + totalTime);
             alert.showAndWait();
         }
     }
