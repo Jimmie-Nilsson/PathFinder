@@ -381,6 +381,31 @@ public class PathFinder extends Application {
     class ChangeConnectionHandler implements EventHandler<ActionEvent> {
         @Override
         public void handle(ActionEvent event) {
+            if (locA == null || locB == null) {
+                showErrorAlert("Two places must be selected!");
+                return;
+            }
+            if (graph.getEdgeBetween(locA, locB) == null) {
+                showErrorAlert("No connection between: " + locA.getName() + " and: " + locB.getName());
+                return;
+            }
+            ConnectionAlert alert = new ConnectionAlert(locA.getName(), locB.getName());
+            alert.setName(graph.getEdgeBetween(locA, locB).getName());
+            alert.setTime("");
+            alert.setNameEditable(false);
+            alert.setTimeEditable(true);
+            Optional<ButtonType> answer = alert.showAndWait();
+            if (answer.isPresent() && answer.get() == ButtonType.OK) {
+                try {
+                    int time = Integer.parseInt(alert.getTime());
+                    graph.setConnectionWeight(locA, locB, time);
+                    changes = true;
+                } catch (NumberFormatException error) {
+                    showErrorAlert("Wrong format in Time field only positive whole numbers are allowed!");
+                } catch (IllegalArgumentException error) {
+                    showErrorAlert("Only positive numbers allowed!");
+                }
+            }
 
         }
     }
@@ -396,13 +421,11 @@ public class PathFinder extends Application {
                 showErrorAlert("No connection between: " + locA.getName() + " and: " + locB.getName());
                 return;
             }
-            ConnectionAlert alert = new ConnectionAlert("Name:", "Time:");
-            alert.setTitle("Connection");
-            alert.setHeaderText("Connection from " + locA.getName() + " to " + locB.getName());
+            ConnectionAlert alert = new ConnectionAlert(locA.getName(), locB.getName());
             alert.setName(graph.getEdgeBetween(locA, locB).getName());
             alert.setTime("" + graph.getEdgeBetween(locA, locB).getWeight());
-            alert.setEditableOne(false);
-            alert.setEditableTwo(false);
+            alert.setNameEditable(false);
+            alert.setTimeEditable(false);
             alert.showAndWait();
         }
     }
@@ -418,9 +441,7 @@ public class PathFinder extends Application {
                 showErrorAlert("Connection already present only 1 connection allowed!");
                 return;
             }
-            ConnectionAlert alert = new ConnectionAlert("Name:", "Time:");
-            alert.setTitle("Connection");
-            alert.setHeaderText("Connection from " + locA.getName() + " to " + locB.getName());
+            ConnectionAlert alert = new ConnectionAlert(locA.getName(), locB.getName());
             try {
                 Optional<ButtonType> result = alert.showAndWait();
                 if (result.isPresent() && result.get() == ButtonType.OK) {
@@ -500,7 +521,7 @@ public class PathFinder extends Application {
             StringBuilder sb = new StringBuilder();
             int totalTime = 0;
             for (Edge<Location> edge : locations) {
-                // sb.append(edge); this doesn't work the way I want it too.
+                // sb.append(edge); this doesn't work the way I want it too it has the coordinates with it.
                 sb.append("to ");
                 sb.append(edge.getDestination().getName());
                 sb.append(" by ");
