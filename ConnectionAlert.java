@@ -1,3 +1,7 @@
+// PROG2 VT2023, Inlämningsuppgift, del 2
+// Grupp 230
+// Jimmie Nilsson jini6619
+
 import javafx.geometry.Insets;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
@@ -23,8 +27,6 @@ public class ConnectionAlert extends Alert {
         getDialogPane().setContent(grid);
         setTitle("Connection");
         setHeaderText("Connection from " + fromName + " to " + toName);
-
-
     }
 
     public String getName() {
@@ -42,10 +44,12 @@ public class ConnectionAlert extends Alert {
     public void setTime(String time) {
         timeField.setText(time);
     }
-    public void setNameEditable(boolean bool){
+
+    public void setNameEditable(boolean bool) {
         nameField.setEditable(bool);
     }
-    public void setTimeEditable(boolean bool){
+
+    public void setTimeEditable(boolean bool) {
         timeField.setEditable(bool);
     }
 }

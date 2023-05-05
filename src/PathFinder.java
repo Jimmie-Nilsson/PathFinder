@@ -26,7 +26,6 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
-
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.*;
@@ -37,9 +36,6 @@ public class PathFinder extends Application {
     // Change variable names later
     // clean up code
     // MAKE MORE METHODS REPEATING WAY TOO MUCH CODE
-    // MAKE NEW CLASSES FOR SHOW CON AND CHANGE CON
-    // MAKE CUSTOM ALERT CLASS ALSO
-    // FIX CONNECTIONHANDLER SO TIME MAKES AN ERROR
     private static final String MAP_NAME = "file:europa.gif";
     private ListGraph<Location> graph = new ListGraph<>();
     private VBox root;
@@ -238,7 +234,6 @@ public class PathFinder extends Application {
                             graph.connect(locations.get(tokens[0]), locations.get(tokens[1]), tokens[2], Integer.parseInt(tokens[3]));
                         }
                     }
-
                 }
                 in.close();
                 file.close();
@@ -258,13 +253,13 @@ public class PathFinder extends Application {
                 FileWriter file = new FileWriter("europa.graph");
                 PrintWriter out = new PrintWriter(file);
                 out.println("file:europa.gif");
-
                 for (Location loc : graph.getNodes()) {
                     // out.format("%s;%.01f;%.01f;", loc.getName(), loc.getCenterX(), loc.getCenterY()); THIS DOESN'T WORK BECAUSE OF LOCALE SETTINGS
                     out.format("%s;%.05s;%.05s;", loc.getName(), loc.getCenterX(), loc.getCenterY());
                 }
                 out.println();
                 for (Location loc : graph.getNodes()) {
+
                     for (Edge<Location> edge : graph.getEdgesFrom(loc)) {
                         out.format("%s;%s;%s;%d\n", loc.getName(), edge.getDestination().getName(), edge.getName(), edge.getWeight());
                     }
@@ -274,7 +269,6 @@ public class PathFinder extends Application {
                 changes = false;
             } catch (FileNotFoundException e) {
                 showErrorAlert("Could not write to File: europa.graph");
-
             } catch (IOException e) {
                 showErrorAlert(e.getMessage());
             }
@@ -283,15 +277,18 @@ public class PathFinder extends Application {
 
     private void loadGraphToMap(ListGraph<Location> graph) {
         for (Location loc : graph.getNodes()) {
-            loc.setOnMouseClicked(new ClickHandler());
-            map.getChildren().add(loc);
-            loadCityTextToMap(loc);
-            loc.setId(loc.getName());
+            loadLocationToMap(loc);
 
             for (Edge<Location> edge : graph.getEdgesFrom(loc)) {
                 loadConnectionToMap(loc, edge.getDestination());
             }
         }
+    }
+    private void loadLocationToMap(Location loc){
+        loc.setOnMouseClicked(new ClickHandler());
+        map.getChildren().add(loc);
+        loadCityTextToMap(loc);
+        loc.setId(loc.getName());
     }
 
     private void loadConnectionToMap(Location locationA, Location locationB) {
@@ -334,10 +331,7 @@ public class PathFinder extends Application {
                 if (name.isPresent() && !name.get().equals("")) {
                     Location loc = new Location(name.get(), mouseEvent.getX(), mouseEvent.getY());
                     graph.add(loc);
-                    loc.setOnMouseClicked(new ClickHandler());
-                    map.getChildren().add(loc);
-                    loadCityTextToMap(loc);
-                    loc.setId(loc.getName()); // check this later
+                  loadLocationToMap(loc);
                     changes = true;
 
                 } else if (name.isPresent()) {
@@ -393,7 +387,6 @@ public class PathFinder extends Application {
             alert.setName(graph.getEdgeBetween(locA, locB).getName());
             alert.setTime("");
             alert.setNameEditable(false);
-            alert.setTimeEditable(true);
             Optional<ButtonType> answer = alert.showAndWait();
             if (answer.isPresent() && answer.get() == ButtonType.OK) {
                 try {
@@ -403,10 +396,9 @@ public class PathFinder extends Application {
                 } catch (NumberFormatException error) {
                     showErrorAlert("Wrong format in Time field only positive whole numbers are allowed!");
                 } catch (IllegalArgumentException error) {
-                    showErrorAlert("Only positive numbers allowed!");
+                    showErrorAlert("Time is not allowed to be negative!");
                 }
             }
-
         }
     }
 
@@ -460,44 +452,6 @@ public class PathFinder extends Application {
             } catch (IllegalArgumentException error) {
                 showErrorAlert("Time is not allowed to be negative!");
             }
-//            if (event.getSource().equals(showCon) || event.getSource().equals(changeCon)) {
-//                if (graph.getEdgeBetween(locA, locB) == null) {
-//                    showErrorAlert("No connection between: " + locA.getName() + " and: " + locB.getName());
-//                    return;
-//                }
-
-
-//                    if (event.getSource().equals(showCon)) {
-//                        nameInput.setText(graph.getEdgeBetween(locA, locB).getName());
-//                        nameInput.setEditable(false);
-//                        timeInput.setText("" + graph.getEdgeBetween(locA, locB).getWeight());
-//                        timeInput.setEditable(false);
-//                        alert.showAndWait();
-//
-//
-//
-//                    }else if (event.getSource().equals(changeCon)){
-//                        nameInput.setText(graph.getEdgeBetween(locA, locB).getName());
-//                        nameInput.setEditable(false);
-//                        timeInput.setEditable(true);
-//                        timeInput.setText("");
-//                        Optional<ButtonType> result = alert.showAndWait();
-//                        if (result.isPresent() && result.get() == ButtonType.OK){
-//                            try{
-//                                int time = Integer.parseInt(timeInput.getText());
-//                                if (time < 0){
-//                                    showErrorAlert("Only positive numbers allowed!");
-//                                    return;
-//                                }
-//                                graph.setConnectionWeight(locA, locB, time);
-//                                changes = true;
-//                            }catch (NumberFormatException e){
-//                                showErrorAlert("Wrong format in Time field only positive whole numbers are allowed!");
-//                            }
-//                        }
-//                    }
-//            }
-
         }
     }
 
