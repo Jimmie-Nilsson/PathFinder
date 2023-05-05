@@ -197,9 +197,6 @@ public class PathFinder extends Application {
         @Override
         public void handle(ActionEvent actionEvent) {
             Map<String, Location> locations = new HashMap<>();
-            graph = new ListGraph<>();
-            locA = null;
-            locB = null;
             if (changes) {
                 Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
                 alert.setTitle("Warning!");
@@ -371,11 +368,15 @@ public class PathFinder extends Application {
         }
     }
 
+    private boolean isSelectionInvalid(){
+        return locA == null || locB == null;
+    }
+
 
     class ChangeConnectionHandler implements EventHandler<ActionEvent> {
         @Override
         public void handle(ActionEvent event) {
-            if (locA == null || locB == null) {
+            if (isSelectionInvalid()) {
                 showErrorAlert("Two places must be selected!");
                 return;
             }
@@ -405,7 +406,7 @@ public class PathFinder extends Application {
     class ShowConnectionHandler implements EventHandler<ActionEvent> {
         @Override
         public void handle(ActionEvent event) {
-            if (locA == null || locB == null) {
+            if (isSelectionInvalid()) {
                 showErrorAlert("Two places must be selected!");
                 return;
             }
@@ -425,7 +426,7 @@ public class PathFinder extends Application {
     class NewConnectionHandler implements EventHandler<ActionEvent> {
         @Override
         public void handle(ActionEvent event) {
-            if (locA == null || locB == null) {
+            if (isSelectionInvalid()) {
                 showErrorAlert("Two places must be selected!");
                 return;
             }
