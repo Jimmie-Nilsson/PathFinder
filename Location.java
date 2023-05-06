@@ -1,6 +1,7 @@
 // PROG2 VT2023, Inlämningsuppgift, del 2
 // Grupp 230
 // Jimmie Nilsson jini6619
+
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 
@@ -22,15 +23,16 @@ public class Location extends Circle {
         return name;
     }
 
-    public void flipColor(){
-        if (color.equals(Color.RED)){
+    public void flipColor() {
+        if (color.equals(Color.RED)) {
             this.color = Color.BLUE;
             setFill(color);
-        }else {
+        } else {
             this.color = Color.RED;
             setFill(color);
         }
     }
+
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof Location other) {
@@ -39,13 +41,13 @@ public class Location extends Circle {
         return false;
     }
 
-   @Override
-   public int hashCode(){
-        return Objects.hash(name,getCenterX(),getCenterY());
-   }
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, getCenterX(), getCenterY());
+    }
 
     public String toString() {
-        return String.format("%s [%.01f  %.01f]", name, getCenterX(), getCenterY());
+        return name;
     }
 
 }

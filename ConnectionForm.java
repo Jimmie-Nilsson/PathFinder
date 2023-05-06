@@ -8,13 +8,13 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 
-public class ConnectionAlert extends Alert {
+public class ConnectionForm extends Alert {
 
 
     private TextField nameField = new TextField();
     private TextField timeField = new TextField();
 
-    public ConnectionAlert(String fromName, String toName) {
+    public ConnectionForm(String fromName, String toName) {
         super(AlertType.CONFIRMATION);
         GridPane grid = new GridPane();
         grid.setHgap(10);

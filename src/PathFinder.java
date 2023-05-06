@@ -26,6 +26,7 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.*;
@@ -33,9 +34,6 @@ import java.util.*;
 
 public class PathFinder extends Application {
 
-    // Change variable names later
-    // clean up code
-    // MAKE MORE METHODS REPEATING WAY TOO MUCH CODE
     private static final String MAP_NAME = "file:europa.gif";
     private ListGraph<Location> graph = new ListGraph<>();
     private VBox root;
@@ -136,14 +134,8 @@ public class PathFinder extends Application {
         locB = null;
         graph = new ListGraph<>();
         if (changes) {
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setTitle("Warning!");
-            alert.setContentText("Unsaved changes, continue anyway?");
-            alert.setHeaderText(null);
-            Optional<ButtonType> choice = alert.showAndWait();
-            if (choice.isPresent() && choice.get() != ButtonType.OK) {
+            if (!showChangesAlert()) // if OK is pressed returns true
                 return;
-            }
         }
 
         map.getChildren().clear();
@@ -192,55 +184,60 @@ public class PathFinder extends Application {
         }
     }
 
+    private void loadGraphFromFile() throws IOException {
+        Map<String, Location> locations = new HashMap<>();
+        FileReader file = new FileReader("europa.graph");
+        BufferedReader in = new BufferedReader(file);
+        String line = in.readLine();
+        openMap(line);
+        line = in.readLine();
+        String[] tokens = line.split(";");
+        for (int i = 0; i < tokens.length; i += 3) {
+            Location loc = new Location(tokens[i], Double.parseDouble(tokens[i + 1]), Double.parseDouble(tokens[i + 2]));
+            graph.add(loc);
+            locations.put(loc.getName(), loc);
+        }
+        while ((line = in.readLine()) != null) {
+            tokens = line.split(";");
+            if (locations.containsKey(tokens[0]) && locations.containsKey(tokens[1])) {
+                if (graph.getEdgeBetween(locations.get(tokens[0]), locations.get(tokens[1])) == null) {
+                    graph.connect(locations.get(tokens[0]), locations.get(tokens[1]), tokens[2], Integer.parseInt(tokens[3]));
+                }
+            }
+        }
+        in.close();
+        file.close();
+    }
+
     class OpenMapHandler implements EventHandler<ActionEvent> {
 
         @Override
         public void handle(ActionEvent actionEvent) {
-            Map<String, Location> locations = new HashMap<>();
             if (changes) {
-                Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-                alert.setTitle("Warning!");
-                alert.setContentText("Unsaved changes, continue anyway?");
-                alert.setHeaderText(null);
-                Optional<ButtonType> choice = alert.showAndWait();
-                if (choice.isPresent() && choice.get() != ButtonType.OK) {
+                if (!showChangesAlert()) // if OK is pressed returns true
                     return;
-                }
-                changes = false;
             }
             try {
-                FileReader file = new FileReader("europa.graph");
-                BufferedReader in = new BufferedReader(file);
-                String line = in.readLine();
-                openMap(line);
-                line = in.readLine();
-                String[] tokens = line.split(";");
-                if (tokens.length < 3) {
-                    showErrorAlert("File does not contain any Locations");
-                    return;
-                }
-                for (int i = 0; i < tokens.length; i += 3) {
-                    Location loc = new Location(tokens[i], Double.parseDouble(tokens[i + 1]), Double.parseDouble(tokens[i + 2]));
-                    graph.add(loc);
-                    locations.put(loc.getName(), loc);
-                }
-                while ((line = in.readLine()) != null) {
-                    tokens = line.split(";");
-                    if (locations.containsKey(tokens[0]) && locations.containsKey(tokens[1])) {
-                        if (graph.getEdgeBetween(locations.get(tokens[0]), locations.get(tokens[1])) == null) {
-                            graph.connect(locations.get(tokens[0]), locations.get(tokens[1]), tokens[2], Integer.parseInt(tokens[3]));
-                        }
-                    }
-                }
-                in.close();
-                file.close();
+                changes = false;
+                loadGraphFromFile();
                 loadGraphToMap(graph);
-            } catch (FileNotFoundException e) {
+            } catch (FileNotFoundException error) {
                 showErrorAlert("Could not find File: europa.graph");
-            } catch (IOException e) {
-                showErrorAlert(e.getMessage());
+            } catch (IOException error) {
+                showErrorAlert(error.getMessage());
+            } catch (IndexOutOfBoundsException error) {
+                showErrorAlert("File does not contain any Locations");
             }
         }
+    }
+
+    private boolean showChangesAlert() {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Warning!");
+        alert.setContentText("Unsaved changes, continue anyway?");
+        alert.setHeaderText(null);
+        Optional<ButtonType> choice = alert.showAndWait();
+        return choice.isPresent() && choice.get() == ButtonType.OK;
     }
 
     class SaveMapHandler implements EventHandler<ActionEvent> {
@@ -281,7 +278,8 @@ public class PathFinder extends Application {
             }
         }
     }
-    private void loadLocationToMap(Location loc){
+
+    private void loadLocationToMap(Location loc) {
         loc.setOnMouseClicked(new ClickHandler());
         map.getChildren().add(loc);
         loadCityTextToMap(loc);
@@ -328,7 +326,7 @@ public class PathFinder extends Application {
                 if (name.isPresent() && !name.get().equals("")) {
                     Location loc = new Location(name.get(), mouseEvent.getX(), mouseEvent.getY());
                     graph.add(loc);
-                  loadLocationToMap(loc);
+                    loadLocationToMap(loc);
                     changes = true;
 
                 } else if (name.isPresent()) {
@@ -368,7 +366,7 @@ public class PathFinder extends Application {
         }
     }
 
-    private boolean isSelectionInvalid(){
+    private boolean isSelectionInvalid() {
         return locA == null || locB == null;
     }
 
@@ -384,14 +382,14 @@ public class PathFinder extends Application {
                 showErrorAlert("No connection between: " + locA.getName() + " and: " + locB.getName());
                 return;
             }
-            ConnectionAlert alert = new ConnectionAlert(locA.getName(), locB.getName());
-            alert.setName(graph.getEdgeBetween(locA, locB).getName());
-            alert.setTime("");
-            alert.setNameEditable(false);
-            Optional<ButtonType> answer = alert.showAndWait();
+            ConnectionForm dialog = new ConnectionForm(locA.getName(), locB.getName());
+            dialog.setName(graph.getEdgeBetween(locA, locB).getName());
+            dialog.setTime("");
+            dialog.setNameEditable(false);
+            Optional<ButtonType> answer = dialog.showAndWait();
             if (answer.isPresent() && answer.get() == ButtonType.OK) {
                 try {
-                    int time = Integer.parseInt(alert.getTime());
+                    int time = Integer.parseInt(dialog.getTime());
                     graph.setConnectionWeight(locA, locB, time);
                     changes = true;
                 } catch (NumberFormatException error) {
@@ -414,12 +412,12 @@ public class PathFinder extends Application {
                 showErrorAlert("No connection between: " + locA.getName() + " and: " + locB.getName());
                 return;
             }
-            ConnectionAlert alert = new ConnectionAlert(locA.getName(), locB.getName());
-            alert.setName(graph.getEdgeBetween(locA, locB).getName());
-            alert.setTime("" + graph.getEdgeBetween(locA, locB).getWeight());
-            alert.setNameEditable(false);
-            alert.setTimeEditable(false);
-            alert.showAndWait();
+            ConnectionForm dialog = new ConnectionForm(locA.getName(), locB.getName());
+            dialog.setName(graph.getEdgeBetween(locA, locB).getName());
+            dialog.setTime("" + graph.getEdgeBetween(locA, locB).getWeight());
+            dialog.setNameEditable(false);
+            dialog.setTimeEditable(false);
+            dialog.showAndWait();
         }
     }
 
@@ -434,16 +432,16 @@ public class PathFinder extends Application {
                 showErrorAlert("Connection already present only 1 connection allowed!");
                 return;
             }
-            ConnectionAlert alert = new ConnectionAlert(locA.getName(), locB.getName());
+            ConnectionForm dialog = new ConnectionForm(locA.getName(), locB.getName());
             try {
-                Optional<ButtonType> result = alert.showAndWait();
-                if (result.isPresent() && result.get() == ButtonType.OK) {
-                    if (alert.getName().equals("") || alert.getTime().equals("")) {
+                Optional<ButtonType> answer = dialog.showAndWait();
+                if (answer.isPresent() && answer.get() == ButtonType.OK) {
+                    if (dialog.getName().equals("") || dialog.getTime().equals("")) {
                         showErrorAlert("Both fields are required!");
                         return;
                     }
-                    String name = alert.getName();
-                    int time = Integer.parseInt(alert.getTime());
+                    String name = dialog.getName();
+                    int time = Integer.parseInt(dialog.getTime());
                     graph.connect(locA, locB, name, time);
                     loadConnectionToMap(locA, locB);
                     changes = true;
@@ -476,13 +474,7 @@ public class PathFinder extends Application {
             StringBuilder sb = new StringBuilder();
             int totalTime = 0;
             for (Edge<Location> edge : locations) {
-                // sb.append(edge); this doesn't work the way I want it too it has the coordinates with it.
-                sb.append("to ");
-                sb.append(edge.getDestination().getName());
-                sb.append(" by ");
-                sb.append(edge.getName());
-                sb.append(" takes ");
-                sb.append(edge.getWeight());
+                sb.append(edge);
                 sb.append("\n");
                 totalTime += edge.getWeight();
             }
