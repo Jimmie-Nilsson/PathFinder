@@ -40,6 +40,7 @@ public class ListGraph<T> implements Graph<T> {
     public List<Edge<T>> getPath(T from, T to) {
         if (!nodes.containsKey(from) || !nodes.containsKey(to))
             return null;
+
         Map<T, T> connections = new HashMap<>();
         LinkedList<T> queue = new LinkedList<>();
 
@@ -151,14 +152,15 @@ public class ListGraph<T> implements Graph<T> {
         for (Edge<T> edge : nodes.get(from)) {
             T t = edge.getDestination();
             if (!visited.contains(t)) {
-                 depthFirstSearch(t, destination, visited);
+                depthFirstSearch(t, destination, visited);
             }
         }
     }
-    private List<Edge<T>> gatherPath(T from, T to, Map<T,T> connections){
+
+    private List<Edge<T>> gatherPath(T from, T to, Map<T, T> connections) {
         LinkedList<Edge<T>> path = new LinkedList<>();
         T current = to;
-        while (!current.equals(from)){
+        while (!current.equals(from)) {
             T next = connections.get(current);
             Edge<T> edge = getEdgeBetween(next, current);
             path.addFirst(edge);
@@ -167,19 +169,19 @@ public class ListGraph<T> implements Graph<T> {
         return path;
     }
 
-    public String toString(){
+    public String toString() {
         StringBuilder sb = new StringBuilder();
-        for (T t : nodes.keySet()){
+        for (T t : nodes.keySet()) {
             sb.append("From: ");
             sb.append(t.toString());
             sb.append(" ");
-                for (Edge<T> edge : nodes.get(t)){
+            for (Edge<T> edge : nodes.get(t)) {
 
-                    sb.append(edge.toString());
-                    sb.append(", ");
-                }
-                sb.append("\n");
+                sb.append(edge.toString());
+                sb.append(", ");
             }
+            sb.append("\n");
+        }
         return sb.toString();
     }
 

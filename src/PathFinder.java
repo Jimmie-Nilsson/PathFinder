@@ -26,7 +26,6 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
-
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.*;
@@ -134,7 +133,7 @@ public class PathFinder extends Application {
         locB = null;
         graph = new ListGraph<>();
         if (changes) {
-            if (!showChangesAlert()) // if OK is pressed returns true
+            if (unsavedChangesAlert())
                 return;
         }
 
@@ -167,23 +166,27 @@ public class PathFinder extends Application {
 
     }
 
+    class OpenMapHandler implements EventHandler<ActionEvent> {
 
-    class ExitHandler implements EventHandler<WindowEvent> {
         @Override
-        public void handle(WindowEvent event) {
+        public void handle(ActionEvent actionEvent) {
             if (changes) {
-                Alert msgBox = new Alert(Alert.AlertType.CONFIRMATION);
-                msgBox.setTitle("Warning!");
-                msgBox.setContentText("Unsaved changes, exit anyway?");
-                msgBox.setHeaderText(null);
-                Optional<ButtonType> choice = msgBox.showAndWait();
-                if (choice.isPresent() && choice.get() != ButtonType.OK) {
-                    event.consume();
-                }
+                if (unsavedChangesAlert())
+                    return;
+            }
+            try {
+                changes = false;
+                loadGraphFromFile();
+                loadGraphToMap(graph);
+            } catch (FileNotFoundException error) {
+                showErrorAlert("Could not find File: europa.graph");
+            } catch (IOException error) {
+                showErrorAlert(error.getMessage());
+            } catch (IndexOutOfBoundsException error) {
+                showErrorAlert("File does not contain any Locations");
             }
         }
     }
-
     private void loadGraphFromFile() throws IOException {
         Map<String, Location> locations = new HashMap<>();
         FileReader file = new FileReader("europa.graph");
@@ -209,64 +212,13 @@ public class PathFinder extends Application {
         file.close();
     }
 
-    class OpenMapHandler implements EventHandler<ActionEvent> {
-
-        @Override
-        public void handle(ActionEvent actionEvent) {
-            if (changes) {
-                if (!showChangesAlert()) // if OK is pressed returns true
-                    return;
-            }
-            try {
-                changes = false;
-                loadGraphFromFile();
-                loadGraphToMap(graph);
-            } catch (FileNotFoundException error) {
-                showErrorAlert("Could not find File: europa.graph");
-            } catch (IOException error) {
-                showErrorAlert(error.getMessage());
-            } catch (IndexOutOfBoundsException error) {
-                showErrorAlert("File does not contain any Locations");
-            }
-        }
-    }
-
-    private boolean showChangesAlert() {
+    private boolean unsavedChangesAlert() {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Warning!");
         alert.setContentText("Unsaved changes, continue anyway?");
         alert.setHeaderText(null);
         Optional<ButtonType> choice = alert.showAndWait();
-        return choice.isPresent() && choice.get() == ButtonType.OK;
-    }
-
-    class SaveMapHandler implements EventHandler<ActionEvent> {
-        @Override
-        public void handle(ActionEvent event) {
-            try {
-                FileWriter file = new FileWriter("europa.graph");
-                PrintWriter out = new PrintWriter(file);
-                out.println("file:europa.gif");
-                for (Location loc : graph.getNodes()) {
-                    // out.format("%s;%.01f;%.01f;", loc.getName(), loc.getCenterX(), loc.getCenterY()); THIS DOESN'T WORK BECAUSE OF LOCALE SETTINGS
-                    out.format("%s;%.05s;%.05s;", loc.getName(), loc.getCenterX(), loc.getCenterY());
-                }
-                out.println();
-                for (Location loc : graph.getNodes()) {
-
-                    for (Edge<Location> edge : graph.getEdgesFrom(loc)) {
-                        out.format("%s;%s;%s;%d\n", loc.getName(), edge.getDestination().getName(), edge.getName(), edge.getWeight());
-                    }
-                }
-                out.close();
-                file.close();
-                changes = false;
-            } catch (FileNotFoundException e) {
-                showErrorAlert("Could not write to File: europa.graph");
-            } catch (IOException e) {
-                showErrorAlert(e.getMessage());
-            }
-        }
+        return choice.isPresent() && choice.get() != ButtonType.OK;
     }
 
     private void loadGraphToMap(ListGraph<Location> graph) {
@@ -366,11 +318,6 @@ public class PathFinder extends Application {
         }
     }
 
-    private boolean isSelectionInvalid() {
-        return locA == null || locB == null;
-    }
-
-
     class ChangeConnectionHandler implements EventHandler<ActionEvent> {
         @Override
         public void handle(ActionEvent event) {
@@ -454,6 +401,10 @@ public class PathFinder extends Application {
         }
     }
 
+    private boolean isSelectionInvalid() {
+        return locA == null || locB == null;
+    }
+
     class ShowPathHandler implements EventHandler<ActionEvent> {
         @Override
         public void handle(ActionEvent event) {
@@ -480,6 +431,51 @@ public class PathFinder extends Application {
             }
             textArea.setText(sb + "Total " + totalTime);
             alert.showAndWait();
+        }
+    }
+
+    class SaveMapHandler implements EventHandler<ActionEvent> {
+        @Override
+        public void handle(ActionEvent event) {
+            try {
+                FileWriter file = new FileWriter("europa.graph");
+                PrintWriter out = new PrintWriter(file);
+                out.println("file:europa.gif");
+                for (Location loc : graph.getNodes()) {
+                    // out.format("%s;%.01f;%.01f;", loc.getName(), loc.getCenterX(), loc.getCenterY()); THIS DOESN'T WORK BECAUSE OF LOCALE SETTINGS
+                    out.format("%s;%.05s;%.05s;", loc.getName(), loc.getCenterX(), loc.getCenterY());
+                }
+                out.println();
+                for (Location loc : graph.getNodes()) {
+
+                    for (Edge<Location> edge : graph.getEdgesFrom(loc)) {
+                        out.format("%s;%s;%s;%d\n", loc.getName(), edge.getDestination().getName(), edge.getName(), edge.getWeight());
+                    }
+                }
+                out.close();
+                file.close();
+                changes = false;
+            } catch (FileNotFoundException e) {
+                showErrorAlert("Could not write to File: europa.graph");
+            } catch (IOException e) {
+                showErrorAlert(e.getMessage());
+            }
+        }
+    }
+
+    class ExitHandler implements EventHandler<WindowEvent> {
+        @Override
+        public void handle(WindowEvent event) {
+            if (changes) {
+                Alert msgBox = new Alert(Alert.AlertType.CONFIRMATION);
+                msgBox.setTitle("Warning!");
+                msgBox.setContentText("Unsaved changes, exit anyway?");
+                msgBox.setHeaderText(null);
+                Optional<ButtonType> choice = msgBox.showAndWait();
+                if (choice.isPresent() && choice.get() != ButtonType.OK) {
+                    event.consume();
+                }
+            }
         }
     }
 
