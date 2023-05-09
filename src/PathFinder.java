@@ -163,6 +163,7 @@ public class PathFinder extends Application {
     }
 // I decided not to use this method because then all the variables needed to be declared outside the start method.
     // so I decided to have a little messier start method to save declaring variables outside the start method.
+
 //    private void setIDs() {
 //        menuBar.setId("menu");
 //        fileMenu.setId("menuFile");
