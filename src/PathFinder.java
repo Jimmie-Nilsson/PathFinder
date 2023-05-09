@@ -26,6 +26,7 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.*;
@@ -33,51 +34,44 @@ import java.util.*;
 
 public class PathFinder extends Application {
 
+    // CHANGE setIDs and make them in the start method, so I can convert variables to local variables.
+    // ASK ABOUT CHANGE ABOVE
+    // if you click the menu after clicking new location it doesn't reset the crosshair or the map FIX ? ask about this.
+
     private static final String MAP_NAME = "file:europa.gif";
     private ListGraph<Location> graph = new ListGraph<>();
     private VBox root;
     private Pane map;
-    private MenuBar menuBar;
-    private Menu fileMenu;
-    private MenuItem menuFileNewMap;
-    private MenuItem menuFileOpen;
-    private MenuItem menuSave;
-    private MenuItem menuSaveImg;
-    private MenuItem menuExit;
     private FlowPane buttons;
-    private Button findPath;
-    private Button showCon;
     private Button newPlace;
-    private Button newCon;
-    private Button changeCon;
     private Stage primaryStage;
-    private Location locA;
-    private Location locB;
+    private Location locationOne;
+    private Location locationTwo;
     private boolean changes;
 
 
     public void start(Stage primaryStage) {
         this.primaryStage = primaryStage;
         root = new VBox();
-        menuBar = new MenuBar();
-        fileMenu = new Menu("File");
+        MenuBar menuBar = new MenuBar();
+        Menu fileMenu = new Menu("File");
 
-        menuFileNewMap = new MenuItem("New Map");
+        MenuItem menuFileNewMap = new MenuItem("New Map");
         menuFileNewMap.setOnAction(event -> {
             openMap(MAP_NAME);
             changes = true;
         });
 
-        menuFileOpen = new MenuItem("Open");
+        MenuItem menuFileOpen = new MenuItem("Open");
         menuFileOpen.setOnAction(new OpenMapHandler());
 
-        menuSave = new MenuItem("Save");
+        MenuItem menuSave = new MenuItem("Save");
         menuSave.setOnAction(new SaveMapHandler());
 
-        menuSaveImg = new MenuItem("Save Image");
+        MenuItem menuSaveImg = new MenuItem("Save Image");
         menuSaveImg.setOnAction(new SaveImgHandler());
 
-        menuExit = new MenuItem("Exit");
+        MenuItem menuExit = new MenuItem("Exit");
         menuExit.setOnAction(event -> {
             if (changes) {
                 primaryStage.fireEvent(new WindowEvent(primaryStage, WindowEvent.WINDOW_CLOSE_REQUEST));
@@ -94,16 +88,22 @@ public class PathFinder extends Application {
         buttons = new FlowPane();
         buttons.setPadding(new Insets(10));
         buttons.setHgap(10);
-        findPath = new Button("Find Path");
+
+        Button findPath = new Button("Find Path");
         findPath.setOnAction(new ShowPathHandler());
-        showCon = new Button("Show Connection");
+
+        Button showCon = new Button("Show Connection");
         showCon.setOnAction(new ShowConnectionHandler());
+
         newPlace = new Button("New Place");
         newPlace.setOnAction(new NewLocationHandler());
-        newCon = new Button("New Connection");
+
+        Button newCon = new Button("New Connection");
         newCon.setOnAction(new NewConnectionHandler());
-        changeCon = new Button("Change connection");
+
+        Button changeCon = new Button("Change connection");
         changeCon.setOnAction(new ChangeConnectionHandler());
+
         buttons.setAlignment(Pos.CENTER);
         buttons.getChildren().addAll(findPath, showCon, newPlace, newCon, changeCon);
         buttons.setDisable(true);
@@ -114,14 +114,28 @@ public class PathFinder extends Application {
         root.getChildren().add(menuBar);
         root.getChildren().add(buttons);
         root.getChildren().add(map);
+
+
+        menuBar.setId("menu");
+        fileMenu.setId("menuFile");
+        menuFileNewMap.setId("menuNewMap");
+        menuFileOpen.setId("menuOpenFile");
+        menuSave.setId("menuSaveFile");
+        menuSaveImg.setId("menuSaveImage");
+        menuExit.setId("menuExit");
+        findPath.setId("btnFindPath");
+        showCon.setId("btnShowConnection");
+        newPlace.setId("btnNewPlace");
+        changeCon.setId("btnChangeConnection");
+        newCon.setId("btnNewConnection");
+        map.setId("outputArea");
+
+
         Scene scene = new Scene(root, 550, 100);
         primaryStage.setOnCloseRequest(new ExitHandler());
         primaryStage.setScene(scene);
         primaryStage.setTitle("PathFinder");
-        setIDs();
         primaryStage.show();
-
-
     }
 
     public static void main(String[] args) {
@@ -129,8 +143,8 @@ public class PathFinder extends Application {
     }
 
     private void openMap(String mapName) {
-        locA = null;
-        locB = null;
+        locationOne = null;
+        locationTwo = null;
         graph = new ListGraph<>();
         if (changes) {
             if (unsavedChangesAlert())
@@ -147,24 +161,23 @@ public class PathFinder extends Application {
         buttons.setDisable(false);
         map.setVisible(true);
     }
-
-    private void setIDs() {
-        menuBar.setId("menu");
-        fileMenu.setId("menuFile");
-        menuFileNewMap.setId("menuNewMap");
-        menuFileOpen.setId("menuOpenFile");
-        menuSave.setId("menuSaveFile");
-        menuSaveImg.setId("menuSaveImage");
-        menuExit.setId("menuExit");
-        findPath.setId("btnFindPath");
-        showCon.setId("btnShowConnection");
-        newPlace.setId("btnNewPlace");
-        changeCon.setId("btnChangeConnection");
-        newCon.setId("btnNewConnection");
-        map.setId("outputArea");
-
-
-    }
+// I decided not to use this method because then all the variables needed to be declared outside the start method.
+    // so I decided to have a little messier start method to save declaring variables outside the start method.
+//    private void setIDs() {
+//        menuBar.setId("menu");
+//        fileMenu.setId("menuFile");
+//        menuFileNewMap.setId("menuNewMap");
+//        menuFileOpen.setId("menuOpenFile");
+//        menuSave.setId("menuSaveFile");
+//        menuSaveImg.setId("menuSaveImage");
+//        menuExit.setId("menuExit");
+//        findPath.setId("btnFindPath");
+//        showCon.setId("btnShowConnection");
+//        newPlace.setId("btnNewPlace");
+//        changeCon.setId("btnChangeConnection");
+//        newCon.setId("btnNewConnection");
+//        map.setId("outputArea");
+//    }
 
     class OpenMapHandler implements EventHandler<ActionEvent> {
 
@@ -187,6 +200,7 @@ public class PathFinder extends Application {
             }
         }
     }
+
     private void loadGraphFromFile() throws IOException {
         Map<String, Location> locations = new HashMap<>();
         FileReader file = new FileReader("europa.graph");
@@ -298,22 +312,22 @@ public class PathFinder extends Application {
         @Override
         public void handle(MouseEvent event) {
             Location loc = (Location) event.getSource();
-            if (locA == null && !loc.equals(locB)) {
-                locA = loc;
-                locA.flipColor();
-            } else if (locB == null && !loc.equals(locA)) {
-                locB = loc;
-                locB.flipColor();
-            } else if (locA != null && locA.equals(loc)) {
-                locA.flipColor();
-                locA = null;
-                if (locB != null) {
-                    locA = locB;
-                    locB = null;
+            if (locationOne == null && !loc.equals(locationTwo)) {
+                locationOne = loc;
+                locationOne.flipColor();
+            } else if (locationTwo == null && !loc.equals(locationOne)) {
+                locationTwo = loc;
+                locationTwo.flipColor();
+            } else if (locationOne != null && locationOne.equals(loc)) {
+                locationOne.flipColor();
+                locationOne = null;
+                if (locationTwo != null) {
+                    locationOne = locationTwo;
+                    locationTwo = null;
                 }
-            } else if (locB != null && locB.equals(loc)) {
-                locB.flipColor();
-                locB = null;
+            } else if (locationTwo != null && locationTwo.equals(loc)) {
+                locationTwo.flipColor();
+                locationTwo = null;
             }
         }
     }
@@ -325,19 +339,19 @@ public class PathFinder extends Application {
                 showErrorAlert("Two places must be selected!");
                 return;
             }
-            if (graph.getEdgeBetween(locA, locB) == null) {
-                showErrorAlert("No connection between: " + locA.getName() + " and: " + locB.getName());
+            if (graph.getEdgeBetween(locationOne, locationTwo) == null) {
+                showErrorAlert("No connection between: " + locationOne.getName() + " and: " + locationTwo.getName());
                 return;
             }
-            ConnectionForm dialog = new ConnectionForm(locA.getName(), locB.getName());
-            dialog.setName(graph.getEdgeBetween(locA, locB).getName());
+            ConnectionForm dialog = new ConnectionForm(locationOne.getName(), locationTwo.getName());
+            dialog.setName(graph.getEdgeBetween(locationOne, locationTwo).getName());
             dialog.setTime("");
             dialog.setNameEditable(false);
             Optional<ButtonType> answer = dialog.showAndWait();
             if (answer.isPresent() && answer.get() == ButtonType.OK) {
                 try {
                     int time = Integer.parseInt(dialog.getTime());
-                    graph.setConnectionWeight(locA, locB, time);
+                    graph.setConnectionWeight(locationOne, locationTwo, time);
                     changes = true;
                 } catch (NumberFormatException error) {
                     showErrorAlert("Wrong format in Time field only positive whole numbers are allowed!");
@@ -355,13 +369,13 @@ public class PathFinder extends Application {
                 showErrorAlert("Two places must be selected!");
                 return;
             }
-            if (graph.getEdgeBetween(locA, locB) == null) {
-                showErrorAlert("No connection between: " + locA.getName() + " and: " + locB.getName());
+            if (graph.getEdgeBetween(locationOne, locationTwo) == null) {
+                showErrorAlert("No connection between: " + locationOne.getName() + " and: " + locationTwo.getName());
                 return;
             }
-            ConnectionForm dialog = new ConnectionForm(locA.getName(), locB.getName());
-            dialog.setName(graph.getEdgeBetween(locA, locB).getName());
-            dialog.setTime("" + graph.getEdgeBetween(locA, locB).getWeight());
+            ConnectionForm dialog = new ConnectionForm(locationOne.getName(), locationTwo.getName());
+            dialog.setName(graph.getEdgeBetween(locationOne, locationTwo).getName());
+            dialog.setTime("" + graph.getEdgeBetween(locationOne, locationTwo).getWeight());
             dialog.setNameEditable(false);
             dialog.setTimeEditable(false);
             dialog.showAndWait();
@@ -375,11 +389,11 @@ public class PathFinder extends Application {
                 showErrorAlert("Two places must be selected!");
                 return;
             }
-            if (graph.getEdgeBetween(locA, locB) != null) {
+            if (graph.getEdgeBetween(locationOne, locationTwo) != null) {
                 showErrorAlert("Connection already present only 1 connection allowed!");
                 return;
             }
-            ConnectionForm dialog = new ConnectionForm(locA.getName(), locB.getName());
+            ConnectionForm dialog = new ConnectionForm(locationOne.getName(), locationTwo.getName());
             try {
                 Optional<ButtonType> answer = dialog.showAndWait();
                 if (answer.isPresent() && answer.get() == ButtonType.OK) {
@@ -389,8 +403,8 @@ public class PathFinder extends Application {
                     }
                     String name = dialog.getName();
                     int time = Integer.parseInt(dialog.getTime());
-                    graph.connect(locA, locB, name, time);
-                    loadConnectionToMap(locA, locB);
+                    graph.connect(locationOne, locationTwo, name, time);
+                    loadConnectionToMap(locationOne, locationTwo);
                     changes = true;
                 }
             } catch (NumberFormatException error) {
@@ -402,26 +416,26 @@ public class PathFinder extends Application {
     }
 
     private boolean isSelectionInvalid() {
-        return locA == null || locB == null;
+        return locationOne == null || locationTwo == null;
     }
 
     class ShowPathHandler implements EventHandler<ActionEvent> {
         @Override
         public void handle(ActionEvent event) {
-            if (locA == null || locB == null) {
+            if (locationOne == null || locationTwo == null) {
                 showErrorAlert("Two Locations must be selected");
                 return;
             }
-            if (!graph.pathExists(locA, locB)) {
-                showErrorAlert("No path between: " + locA.getName() + " and " + locB.getName());
+            if (!graph.pathExists(locationOne, locationTwo)) {
+                showErrorAlert("No path between: " + locationOne.getName() + " and " + locationTwo.getName());
                 return;
             }
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle("Connection");
-            alert.setHeaderText("Path from " + locA.getName() + " to " + locB.getName() + ":");
+            alert.setHeaderText("Path from " + locationOne.getName() + " to " + locationTwo.getName() + ":");
             TextArea textArea = new TextArea();
             alert.getDialogPane().setContent(textArea);
-            ArrayList<Edge<Location>> locations = new ArrayList<>(graph.getPath(locA, locB));
+            ArrayList<Edge<Location>> locations = new ArrayList<>(graph.getPath(locationOne, locationTwo));
             StringBuilder sb = new StringBuilder();
             int totalTime = 0;
             for (Edge<Location> edge : locations) {

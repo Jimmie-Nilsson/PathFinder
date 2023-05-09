@@ -6,7 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="d3c9e704-bf79-4d64-8dc2-e43ad615eed2" name="Changes" comment="New Connection should work also Click handler should work as it should now">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ListGraph.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ListGraph.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/PathFinder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/PathFinder.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -24,7 +23,7 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="ConnectionChanges" />
+        <entry key="$PROJECT_DIR$" value="Almost_done" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -377,7 +376,13 @@
       <option name="presentableId" value="LOCAL−00042" />
       <updated>1683397094703</updated>
     </task>
-    <option name="localTasksCounter" value="43" />
+    <task id="LOCAL−00043" summary="New Connection should work also Click handler should work as it should now">
+      <created>1683467769750</created>
+      <option name="number" value="LOCAL−00043" />
+      <option name="presentableId" value="LOCAL−00043" />
+      <updated>1683467769750</updated>
+    </task>
+    <option name="localTasksCounter" value="44" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
