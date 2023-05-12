@@ -26,17 +26,12 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
-
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.*;
 
 public class PathFinder extends Application {
-
-    // CHANGE setIDs and make them in the start method, so I can convert variables to local variables.
-    // ASK ABOUT CHANGE ABOVE
-    // if you click the menu after clicking new location it doesn't reset the crosshair or the map FIX ? ask about this.
 
     private static final String MAP_NAME = "file:europa.gif";
     private ListGraph<Location> graph = new ListGraph<>();
@@ -98,6 +93,7 @@ public class PathFinder extends Application {
         newPlace = new Button("New Place");
         newPlace.setOnAction(new NewLocationHandler());
 
+
         Button newCon = new Button("New Connection");
         newCon.setOnAction(new NewConnectionHandler());
 
@@ -111,9 +107,7 @@ public class PathFinder extends Application {
 
         map = new Pane();
         map.setVisible(false);
-        root.getChildren().add(menuBar);
-        root.getChildren().add(buttons);
-        root.getChildren().add(map);
+        root.getChildren().addAll(menuBar, buttons, map);
 
 
         menuBar.setId("menu");
@@ -161,24 +155,6 @@ public class PathFinder extends Application {
         buttons.setDisable(false);
         map.setVisible(true);
     }
-// I decided not to use this method because then all the variables needed to be declared outside the start method.
-    // so I decided to have a little messier start method to save declaring variables outside the start method.
-
-//    private void setIDs() {
-//        menuBar.setId("menu");
-//        fileMenu.setId("menuFile");
-//        menuFileNewMap.setId("menuNewMap");
-//        menuFileOpen.setId("menuOpenFile");
-//        menuSave.setId("menuSaveFile");
-//        menuSaveImg.setId("menuSaveImage");
-//        menuExit.setId("menuExit");
-//        findPath.setId("btnFindPath");
-//        showCon.setId("btnShowConnection");
-//        newPlace.setId("btnNewPlace");
-//        changeCon.setId("btnChangeConnection");
-//        newCon.setId("btnNewConnection");
-//        map.setId("outputArea");
-//    }
 
     class OpenMapHandler implements EventHandler<ActionEvent> {
 
@@ -198,6 +174,7 @@ public class PathFinder extends Application {
                 showErrorAlert(error.getMessage());
             } catch (IndexOutOfBoundsException error) {
                 showErrorAlert("File does not contain any Locations");
+                openMap(MAP_NAME);
             }
         }
     }
@@ -239,7 +216,6 @@ public class PathFinder extends Application {
     private void loadGraphToMap(ListGraph<Location> graph) {
         for (Location loc : graph.getNodes()) {
             loadLocationToMap(loc);
-
             for (Edge<Location> edge : graph.getEdgesFrom(loc)) {
                 loadConnectionToMap(loc, edge.getDestination());
             }
@@ -249,7 +225,7 @@ public class PathFinder extends Application {
     private void loadLocationToMap(Location loc) {
         loc.setOnMouseClicked(new ClickHandler());
         map.getChildren().add(loc);
-        loadCityTextToMap(loc);
+        loadLocationNameToMap(loc);
         loc.setId(loc.getName());
     }
 
@@ -260,12 +236,12 @@ public class PathFinder extends Application {
         map.getChildren().add(connection);
     }
 
-    private void loadCityTextToMap(Location city) {
-        Text cityName = new Text(city.getCenterX() + city.getRadius(), city.getCenterY() + city.getRadius(), city.getName());
-        cityName.setStrokeWidth(5);
-        cityName.setFont(Font.font("Verdana", FontWeight.BOLD, FontPosture.REGULAR, 12));
-        cityName.setDisable(true);
-        map.getChildren().add(cityName);
+    private void loadLocationNameToMap(Location loc) {
+        Text locName = new Text(loc.getCenterX() + loc.getRadius(), loc.getCenterY() + loc.getRadius(), loc.getName());
+        locName.setStrokeWidth(5);
+        locName.setFont(Font.font("Verdana", FontWeight.BOLD, FontPosture.REGULAR, 12));
+        locName.setDisable(true);
+        map.getChildren().add(locName);
     }
 
     class SaveImgHandler implements EventHandler<ActionEvent> {
@@ -291,7 +267,8 @@ public class PathFinder extends Application {
                 nameOfLoc.setContentText("Name of place:");
                 Optional<String> name = nameOfLoc.showAndWait();
                 if (name.isPresent() && !name.get().equals("")) {
-                    Location loc = new Location(name.get(), mouseEvent.getX(), mouseEvent.getY());
+                    String nameNormalized = name.get().substring(0,1).toUpperCase() + name.get().substring(1).toLowerCase();
+                    Location loc = new Location(nameNormalized, mouseEvent.getX(), mouseEvent.getY());
                     graph.add(loc);
                     loadLocationToMap(loc);
                     changes = true;
@@ -303,8 +280,6 @@ public class PathFinder extends Application {
                 newPlace.setDisable(false);
                 map.setOnMouseClicked(null);
             });
-
-
         }
     }
 

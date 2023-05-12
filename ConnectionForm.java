@@ -11,8 +11,8 @@ import javafx.scene.layout.GridPane;
 public class ConnectionForm extends Alert {
 
 
-    private TextField nameField = new TextField();
-    private TextField timeField = new TextField();
+    private final TextField nameField = new TextField();
+    private final TextField timeField = new TextField();
 
     public ConnectionForm(String fromName, String toName) {
         super(AlertType.CONFIRMATION);
